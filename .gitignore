@@ -1,0 +1,23 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build output
+*.zip
+/dist/
+/build/
+
+# Environment / local config
+.env
+.env.*
+
+# Editor and OS noise
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+debug.log
