@@ -7,11 +7,14 @@
 **A WordPress plugin for manually curating and displaying customer reviews from multiple business locations — with full editorial control and no dependency on external review APIs.**
 
 [![License](https://img.shields.io/github/license/SurefireStudios/BuzzHub?color=blue)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.2.4-blue)](README.txt)
+[![Release](https://img.shields.io/github/v/release/SurefireStudios/BuzzHub?label=release&color=blue)](https://github.com/SurefireStudios/BuzzHub/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/SurefireStudios/BuzzHub/total?color=blue)](https://github.com/SurefireStudios/BuzzHub/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-21759B?logo=wordpress&logoColor=white)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
 
-[Surefire Studios](https://surefirestudios.io/) · [Report an issue](https://github.com/SurefireStudios/BuzzHub/issues)
+### [⬇ Download the latest release](https://github.com/SurefireStudios/BuzzHub/releases/latest/download/buzzhub-1.2.4.zip)
+
+[Surefire Studios](https://surefirestudios.io/) · [All releases](https://github.com/SurefireStudios/BuzzHub/releases) · [Report an issue](https://github.com/SurefireStudios/BuzzHub/issues)
 
 </div>
 
@@ -74,6 +77,14 @@ Unlike review plugins that pull from external APIs, nothing here depends on a th
 
 ## Installation
 
+### From the packaged release (recommended)
+
+1. Download [`buzzhub-1.2.4.zip`](https://github.com/SurefireStudios/BuzzHub/releases/latest) from the latest release.
+2. In WordPress go to **Plugins → Add New → Upload Plugin** and choose the file.
+3. Click **Install Now**, then **Activate**.
+
+The archive unpacks to a single `buzzhub/` directory, so it installs without renaming.
+
 ### From this repository
 
 ```bash
@@ -81,12 +92,7 @@ cd wp-content/plugins
 git clone https://github.com/SurefireStudios/BuzzHub.git
 ```
 
-Then activate **BuzzHub** from **Plugins** in the WordPress admin.
-
-### From a zip
-
-1. Upload the plugin files to `/wp-content/plugins/buzzhub/`.
-2. Activate **BuzzHub** through the **Plugins** menu in WordPress.
+Then activate **BuzzHub** from **Plugins** in the WordPress admin. Note that a clone includes development files the packaged release leaves out.
 
 Database tables are created automatically on activation.
 
