@@ -21,3 +21,9 @@ Thumbs.db
 # Logs
 *.log
 debug.log
+
+# Design sources
+*.ai
+*.psd
+*.sketch
+*.fig
