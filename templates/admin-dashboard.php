@@ -278,7 +278,7 @@ if (!defined('ABSPATH')) {
                     <div>
                         <strong>platform:</strong> "google", "yelp", "facebook", "manual", "user_submitted"<br>
                         <strong>autoplay:</strong> "true", "false" (slider only)<br>
-                        <strong>autoplay_speed:</strong> Milliseconds (default: 5000)<br>
+                        <strong>speed:</strong> Milliseconds (default: 5000)<br>
                         <strong>show_breakdown:</strong> "true", "false" (stats only)<br>
                         <strong>show_review_button:</strong> "true", "false" (adds user submission button)
                     </div>

@@ -205,7 +205,7 @@ $display_settings = get_option('buzzhub_display_settings', array(
         <p><?php esc_html_e('Shows 6 reviews in a 3-column grid', 'buzzhub'); ?></p>
         
         <h3><?php esc_html_e('Review Slider', 'buzzhub'); ?></h3>
-        <code>[review_slider autoplay="true" autoplay_speed="5000"]</code>
+        <code>[review_slider autoplay="true" speed="5000"]</code>
         <p><?php esc_html_e('Shows reviews in a slider that auto-advances every 5 seconds', 'buzzhub'); ?></p>
         
         <h3><?php esc_html_e('Review Statistics', 'buzzhub'); ?></h3>
