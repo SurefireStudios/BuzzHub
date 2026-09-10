@@ -1,6 +1,6 @@
 <?php
 /**
- * Review Manager Dashboard Template
+ * BuzzHub Dashboard Template
  */
 
 if (!defined('ABSPATH')) {
@@ -9,45 +9,45 @@ if (!defined('ABSPATH')) {
 ?>
 
 <div class="wrap">
-    <h1><?php esc_html_e('Review Manager Dashboard', 'manual-review-manager'); ?></h1>
+    <h1><?php esc_html_e('BuzzHub Dashboard', 'buzzhub'); ?></h1>
     
-    <div class="mrm-dashboard-stats">
-        <div class="mrm-stat-box">
-            <h3><?php _e('Total Reviews', 'manual-review-manager'); ?></h3>
-            <div class="mrm-stat-number"><?php echo number_format($stats->total_reviews ?? 0); ?></div>
+    <div class="buzzhub-dashboard-stats">
+        <div class="buzzhub-stat-box">
+            <h3><?php esc_html_e('Total Reviews', 'buzzhub'); ?></h3>
+            <div class="buzzhub-stat-number"><?php echo number_format($stats->total_reviews ?? 0); ?></div>
         </div>
         
-        <div class="mrm-stat-box">
-            <h3><?php _e('Average Rating', 'manual-review-manager'); ?></h3>
-            <div class="mrm-stat-number"><?php echo number_format($stats->average_rating ?? 0, 1); ?> ★</div>
+        <div class="buzzhub-stat-box">
+            <h3><?php esc_html_e('Average Rating', 'buzzhub'); ?></h3>
+            <div class="buzzhub-stat-number"><?php echo number_format($stats->average_rating ?? 0, 1); ?> ★</div>
         </div>
         
-        <div class="mrm-stat-box">
-            <h3><?php _e('Total Locations', 'manual-review-manager'); ?></h3>
-            <div class="mrm-stat-number"><?php echo count($locations); ?></div>
+        <div class="buzzhub-stat-box">
+            <h3><?php esc_html_e('Total Locations', 'buzzhub'); ?></h3>
+            <div class="buzzhub-stat-number"><?php echo count($locations); ?></div>
         </div>
         
-        <div class="mrm-stat-box">
-            <h3><?php _e('5-Star Reviews', 'manual-review-manager'); ?></h3>
-            <div class="mrm-stat-number"><?php echo number_format($stats->five_star ?? 0); ?></div>
+        <div class="buzzhub-stat-box">
+            <h3><?php esc_html_e('5-Star Reviews', 'buzzhub'); ?></h3>
+            <div class="buzzhub-stat-number"><?php echo number_format($stats->five_star ?? 0); ?></div>
         </div>
     </div>
     
-    <div class="mrm-dashboard-content">
+    <div class="buzzhub-dashboard-content">
         <!-- All Reviews - Now at the top for easy management -->
-        <div class="mrm-dashboard-section mrm-all-reviews-section">
-            <h2><?php _e('📋 All Reviews', 'manual-review-manager'); ?></h2>
+        <div class="buzzhub-dashboard-section buzzhub-all-reviews-section">
+            <h2><?php esc_html_e('📋 All Reviews', 'buzzhub'); ?></h2>
             <?php if (!empty($recent_reviews)): ?>
-                <div class="mrm-reviews-table-container">
+                <div class="buzzhub-reviews-table-container">
                     <table class="wp-list-table widefat fixed striped">
                         <thead>
                             <tr>
-                                <th style="width: 140px;"><?php _e('Reviewer', 'manual-review-manager'); ?></th>
-                                <th style="width: 80px;"><?php _e('Rating', 'manual-review-manager'); ?></th>
-                                <th><?php _e('Review Text', 'manual-review-manager'); ?></th>
-                                <th style="width: 130px;"><?php _e('Platform', 'manual-review-manager'); ?></th>
-                                <th style="width: 90px;"><?php _e('Status', 'manual-review-manager'); ?></th>
-                                <th style="width: 180px;"><?php _e('Actions', 'manual-review-manager'); ?></th>
+                                <th style="width: 140px;"><?php esc_html_e('Reviewer', 'buzzhub'); ?></th>
+                                <th style="width: 80px;"><?php esc_html_e('Rating', 'buzzhub'); ?></th>
+                                <th><?php esc_html_e('Review Text', 'buzzhub'); ?></th>
+                                <th style="width: 130px;"><?php esc_html_e('Platform', 'buzzhub'); ?></th>
+                                <th style="width: 90px;"><?php esc_html_e('Status', 'buzzhub'); ?></th>
+                                <th style="width: 180px;"><?php esc_html_e('Actions', 'buzzhub'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,39 +73,39 @@ if (!defined('ABSPATH')) {
                                             </div>
                                         </td>
                                     <td>
-                                        <span class="mrm-platform mrm-platform-<?php echo esc_attr($review->platform); ?>">
-                                            <?php echo ucfirst(str_replace('_', ' ', $review->platform)); ?>
+                                        <span class="buzzhub-platform buzzhub-platform-<?php echo esc_attr($review->platform); ?>">
+                                            <?php echo esc_html(ucfirst(str_replace('_', ' ', $review->platform))); ?>
                                         </span>
                                     </td>
                                     <td>
                                         <?php if ($review->is_approved): ?>
-                                            <span style="color: #46b450;">✓ <?php _e('Approved', 'manual-review-manager'); ?></span>
+                                            <span style="color: #46b450;">✓ <?php esc_html_e('Approved', 'buzzhub'); ?></span>
                                         <?php else: ?>
-                                            <span style="color: #dc3232;">✗ <?php _e('Pending', 'manual-review-manager'); ?></span>
+                                            <span style="color: #dc3232;">✗ <?php esc_html_e('Pending', 'buzzhub'); ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php if ($review->platform === 'user_submitted' && !$review->is_approved): ?>
                                             <button class="button button-small button-primary approve-review-btn" 
-                                                    data-review-id="<?php echo $review->id; ?>"
-                                                    title="<?php _e('Approve this review', 'manual-review-manager'); ?>">
-                                                <?php _e('Approve', 'manual-review-manager'); ?>
+                                                    data-review-id="<?php echo esc_attr($review->id); ?>"
+                                                    title="<?php esc_html_e('Approve this review', 'buzzhub'); ?>">
+                                                <?php esc_html_e('Approve', 'buzzhub'); ?>
                                             </button>
                                             <button class="button button-small button-link-delete reject-review-btn" 
-                                                    data-review-id="<?php echo $review->id; ?>"
-                                                    title="<?php _e('Reject this review', 'manual-review-manager'); ?>">
-                                                <?php _e('Reject', 'manual-review-manager'); ?>
+                                                    data-review-id="<?php echo esc_attr($review->id); ?>"
+                                                    title="<?php esc_html_e('Reject this review', 'buzzhub'); ?>">
+                                                <?php esc_html_e('Reject', 'buzzhub'); ?>
                                             </button>
                                         <?php else: ?>
-                                            <a href="<?php echo admin_url('admin.php?page=mrm-add-review&edit=' . $review->id); ?>" 
+                                            <a href="<?php echo esc_url(admin_url('admin.php?page=buzzhub-add-review&edit=' . $review->id)); ?>" 
                                                class="button button-small">
-                                                <?php _e('Edit', 'manual-review-manager'); ?>
+                                                <?php esc_html_e('Edit', 'buzzhub'); ?>
                                             </a>
                                         <?php endif; ?>
                                         <button class="button button-small button-link-delete delete-review-btn" 
-                                                data-review-id="<?php echo $review->id; ?>"
-                                                title="<?php _e('Delete this review', 'manual-review-manager'); ?>">
-                                            <?php _e('Delete', 'manual-review-manager'); ?>
+                                                data-review-id="<?php echo esc_attr($review->id); ?>"
+                                                title="<?php esc_html_e('Delete this review', 'buzzhub'); ?>">
+                                            <?php esc_html_e('Delete', 'buzzhub'); ?>
                                         </button>
                                     </td>
                                 </tr>
@@ -114,160 +114,160 @@ if (!defined('ABSPATH')) {
                     </table>
                 </div>
                 <p style="margin-top: 15px;">
-                    <a href="<?php echo admin_url('admin.php?page=mrm-reviews'); ?>" class="button">
-                        <?php _e('View Full Review Manager', 'manual-review-manager'); ?> →
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=buzzhub-reviews')); ?>" class="button">
+                        <?php esc_html_e('View Full BuzzHub', 'buzzhub'); ?> →
                     </a>
                 </p>
             <?php else: ?>
-                <div class="mrm-empty-state">
-                    <h3><?php _e('No reviews yet', 'manual-review-manager'); ?></h3>
-                    <p><?php _e('Start by adding your first review manually.', 'manual-review-manager'); ?></p>
-                    <a href="<?php echo admin_url('admin.php?page=mrm-add-review'); ?>" class="button button-primary">
-                        <?php _e('Add First Review', 'manual-review-manager'); ?>
+                <div class="buzzhub-empty-state">
+                    <h3><?php esc_html_e('No reviews yet', 'buzzhub'); ?></h3>
+                    <p><?php esc_html_e('Start by adding your first review manually.', 'buzzhub'); ?></p>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=buzzhub-add-review')); ?>" class="button button-primary">
+                        <?php esc_html_e('Add First Review', 'buzzhub'); ?>
                     </a>
                 </div>
             <?php endif; ?>
         </div>
 
         <!-- Quick Actions -->
-        <div class="mrm-dashboard-section">
-            <h2><?php _e('Quick Actions', 'manual-review-manager'); ?></h2>
-            <div class="mrm-quick-actions">
-                <a href="<?php echo admin_url('admin.php?page=mrm-add-review'); ?>" class="button button-primary">
-                    <?php _e('Add New Review', 'manual-review-manager'); ?>
+        <div class="buzzhub-dashboard-section">
+            <h2><?php esc_html_e('Quick Actions', 'buzzhub'); ?></h2>
+            <div class="buzzhub-quick-actions">
+                <a href="<?php echo esc_url(admin_url('admin.php?page=buzzhub-add-review')); ?>" class="button button-primary">
+                    <?php esc_html_e('Add New Review', 'buzzhub'); ?>
                 </a>
-                <a href="<?php echo admin_url('admin.php?page=mrm-locations'); ?>" class="button">
-                    <?php _e('Manage Locations', 'manual-review-manager'); ?>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=buzzhub-locations')); ?>" class="button">
+                    <?php esc_html_e('Manage Locations', 'buzzhub'); ?>
                 </a>
-                <a href="<?php echo admin_url('admin.php?page=mrm-reviews'); ?>" class="button">
-                    <?php _e('View All Reviews', 'manual-review-manager'); ?>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=buzzhub-reviews')); ?>" class="button">
+                    <?php esc_html_e('View All Reviews', 'buzzhub'); ?>
                 </a>
             </div>
         </div>
         
         <!-- Bulk Text Replacement -->
-        <div class="mrm-dashboard-section">
-            <h2><?php _e('Bulk Text Replacement', 'manual-review-manager'); ?></h2>
-            <p><?php _e('Replace text across all reviews (e.g., change "Old Business Name" to "New Business Name").', 'manual-review-manager'); ?></p>
+        <div class="buzzhub-dashboard-section">
+            <h2><?php esc_html_e('Bulk Text Replacement', 'buzzhub'); ?></h2>
+            <p><?php esc_html_e('Replace text across all reviews (e.g., change "Old Business Name" to "New Business Name").', 'buzzhub'); ?></p>
             <form id="bulk-replace-form">
                 <table class="form-table">
                     <tr>
-                        <th scope="row"><?php _e('Search for', 'manual-review-manager'); ?></th>
+                        <th scope="row"><?php esc_html_e('Search for', 'buzzhub'); ?></th>
                         <td>
-                            <input type="text" id="search-text" class="regular-text" placeholder="<?php _e('e.g., Old Business Name', 'manual-review-manager'); ?>" />
+                            <input type="text" id="search-text" class="regular-text" placeholder="<?php esc_html_e('e.g., Old Business Name', 'buzzhub'); ?>" />
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?php _e('Replace with', 'manual-review-manager'); ?></th>
+                        <th scope="row"><?php esc_html_e('Replace with', 'buzzhub'); ?></th>
                         <td>
-                            <input type="text" id="replace-text" class="regular-text" placeholder="<?php _e('e.g., New Business Name', 'manual-review-manager'); ?>" />
+                            <input type="text" id="replace-text" class="regular-text" placeholder="<?php esc_html_e('e.g., New Business Name', 'buzzhub'); ?>" />
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?php _e('Location', 'manual-review-manager'); ?></th>
+                        <th scope="row"><?php esc_html_e('Location', 'buzzhub'); ?></th>
                         <td>
                             <select id="replace-location">
-                                <option value="0"><?php _e('All Locations', 'manual-review-manager'); ?></option>
+                                <option value="0"><?php esc_html_e('All Locations', 'buzzhub'); ?></option>
                                 <?php foreach ($locations as $location): ?>
-                                    <option value="<?php echo $location->id; ?>"><?php echo esc_html($location->name); ?></option>
+                                    <option value="<?php echo esc_attr($location->id); ?>"><?php echo esc_html($location->name); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>
                     </tr>
                 </table>
                 <p class="submit">
-                    <button type="submit" class="button button-primary"><?php _e('Replace Text', 'manual-review-manager'); ?></button>
+                    <button type="submit" class="button button-primary"><?php esc_html_e('Replace Text', 'buzzhub'); ?></button>
                 </p>
             </form>
         </div>
         
         <!-- How to Display Reviews -->
-        <div class="mrm-dashboard-section mrm-shortcode-info">
-            <h2><?php _e('📋 Complete Shortcode Reference', 'manual-review-manager'); ?></h2>
-            <p class="description"><?php _e('Copy and paste these shortcodes into any page or post to display your reviews.', 'manual-review-manager'); ?></p>
+        <div class="buzzhub-dashboard-section buzzhub-shortcode-info">
+            <h2><?php esc_html_e('📋 Complete Shortcode Reference', 'buzzhub'); ?></h2>
+            <p class="description"><?php esc_html_e('Copy and paste these shortcodes into any page or post to display your reviews.', 'buzzhub'); ?></p>
             
-            <div class="mrm-shortcode-examples">
+            <div class="buzzhub-shortcode-examples">
                 <!-- Basic Review Display -->
-                <div class="mrm-shortcode-card">
-                    <h3>🔷 <?php _e('Basic Review Display', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>🔷 <?php esc_html_e('Basic Review Display', 'buzzhub'); ?></h3>
                     <code>[review_manager]</code>
-                    <p><?php _e('Shows all approved reviews in default grid layout.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Shows all approved reviews in default grid layout.', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Review Display with User Submission Button -->
-                <div class="mrm-shortcode-card">
-                    <h3>👤 <?php _e('Reviews with Submission Button', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>👤 <?php esc_html_e('Reviews with Submission Button', 'buzzhub'); ?></h3>
                     <code>[review_manager show_review_button="true"]</code>
-                    <p><?php _e('Shows reviews plus a "Leave Your Own Review" button for logged-in users.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Shows reviews plus a "Leave Your Own Review" button for logged-in users.', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Grid Layout -->
-                <div class="mrm-shortcode-card">
-                    <h3>📱 <?php _e('Grid Layout (2, 3, or 4 columns)', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>📱 <?php esc_html_e('Grid Layout (2, 3, or 4 columns)', 'buzzhub'); ?></h3>
                     <code>[review_manager layout="grid" columns="3" max_reviews="9"]</code>
-                    <p><?php _e('3-column grid showing 9 reviews. Options: columns="1|2|3|4"', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('3-column grid showing 9 reviews. Options: columns="1|2|3|4"', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- List Layout -->
-                <div class="mrm-shortcode-card">
-                    <h3>📝 <?php _e('List Layout', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>📝 <?php esc_html_e('List Layout', 'buzzhub'); ?></h3>
                     <code>[review_manager layout="list" max_reviews="5" min_rating="4"]</code>
-                    <p><?php _e('Vertical list showing 5 reviews with 4+ stars.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Vertical list showing 5 reviews with 4+ stars.', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Review Slider -->
-                <div class="mrm-shortcode-card">
-                    <h3>🎠 <?php _e('Review Slider/Carousel', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>🎠 <?php esc_html_e('Review Slider/Carousel', 'buzzhub'); ?></h3>
                     <code>[review_slider autoplay="true" speed="5000"]</code>
-                    <p><?php _e('Auto-rotating carousel, changes every 5 seconds.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Auto-rotating carousel, changes every 5 seconds.', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Grid Slider -->
-                <div class="mrm-shortcode-card">
-                    <h3>🎯 <?php _e('Grid Slider/Carousel', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>🎯 <?php esc_html_e('Grid Slider/Carousel', 'buzzhub'); ?></h3>
                     <code>[review_grid_slider columns="3" autoplay="true" speed="4000"]</code>
-                    <p><?php _e('Shows 3 reviews at once, slides to next set. Perfect for displaying multiple reviews while saving space.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Shows 3 reviews at once, slides to next set. Perfect for displaying multiple reviews while saving space.', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Platform Filtering -->
-                <div class="mrm-shortcode-card">
-                    <h3>🟦 <?php _e('Platform-Specific Reviews', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>🟦 <?php esc_html_e('Platform-Specific Reviews', 'buzzhub'); ?></h3>
                     <code>[review_manager platform="google" max_reviews="6"]</code>
-                    <p><?php _e('Show only Google reviews. Options: "google", "yelp", "facebook", "manual"', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Show only Google reviews. Options: "google", "yelp", "facebook", "manual"', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Multiple Platforms -->
-                <div class="mrm-shortcode-card">
-                    <h3>🔴🟦 <?php _e('Multiple Platforms', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>🔴🟦 <?php esc_html_e('Multiple Platforms', 'buzzhub'); ?></h3>
                     <code>[review_manager platform="google,yelp" columns="2"]</code>
-                    <p><?php _e('Show Google and Yelp reviews only.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Show Google and Yelp reviews only.', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Rating Filter -->
-                <div class="mrm-shortcode-card">
-                    <h3>⭐ <?php _e('High-Rating Reviews Only', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>⭐ <?php esc_html_e('High-Rating Reviews Only', 'buzzhub'); ?></h3>
                     <code>[review_manager min_rating="5" max_reviews="4"]</code>
-                    <p><?php _e('Show only 5-star reviews. Options: min_rating="1|2|3|4|5"', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Show only 5-star reviews. Options: min_rating="1|2|3|4|5"', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Review Statistics -->
-                <div class="mrm-shortcode-card">
-                    <h3>📊 <?php _e('Review Statistics', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>📊 <?php esc_html_e('Review Statistics', 'buzzhub'); ?></h3>
                     <code>[review_stats show_breakdown="true"]</code>
-                    <p><?php _e('Shows total reviews, average rating, and star breakdown.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Shows total reviews, average rating, and star breakdown.', 'buzzhub'); ?></p>
                 </div>
                 
                 <!-- Simple Stats -->
-                <div class="mrm-shortcode-card">
-                    <h3>📈 <?php _e('Simple Stats', 'manual-review-manager'); ?></h3>
+                <div class="buzzhub-shortcode-card">
+                    <h3>📈 <?php esc_html_e('Simple Stats', 'buzzhub'); ?></h3>
                     <code>[review_stats show_breakdown="false"]</code>
-                    <p><?php _e('Shows just total reviews and average rating.', 'manual-review-manager'); ?></p>
+                    <p><?php esc_html_e('Shows just total reviews and average rating.', 'buzzhub'); ?></p>
                 </div>
             </div>
             
             <!-- Advanced Parameters -->
             <div style="margin-top: 30px; background: #f0f8ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0073aa;">
-                <h3>🔧 <?php _e('Advanced Parameters', 'manual-review-manager'); ?></h3>
+                <h3>🔧 <?php esc_html_e('Advanced Parameters', 'buzzhub'); ?></h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
                     <div>
                         <strong>layout:</strong> "grid", "list", "slider", "grid_slider"<br>
@@ -287,7 +287,7 @@ if (!defined('ABSPATH')) {
             
             <!-- Quick Copy Examples -->
             <div style="margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px;">
-                <h4>🚀 <?php _e('Quick Copy Examples', 'manual-review-manager'); ?></h4>
+                <h4>🚀 <?php esc_html_e('Quick Copy Examples', 'buzzhub'); ?></h4>
                 <div style="display: grid; gap: 10px;">
                     <div style="font-family: monospace; background: white; padding: 8px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;" onclick="navigator.clipboard.writeText('[review_manager layout=&quot;grid&quot; columns=&quot;3&quot; max_reviews=&quot;9&quot; min_rating=&quot;4&quot;]')" title="Click to copy">
                         [review_manager layout="grid" columns="3" max_reviews="9" min_rating="4"]
@@ -309,335 +309,4 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
     </div>
-</div>
-
-<style>
-.mrm-dashboard-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-}
-
-.mrm-stat-box {
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    text-align: center;
-}
-
-.mrm-stat-box h3 {
-    margin: 0 0 10px 0;
-    font-size: 14px;
-    color: #666;
-}
-
-.mrm-stat-number {
-    font-size: 32px;
-    font-weight: bold;
-    color: #0073aa;
-}
-
-.mrm-dashboard-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.mrm-dashboard-section {
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.mrm-dashboard-section h2 {
-    margin-top: 0;
-}
-
-.mrm-shortcode-info {
-    grid-column: 1 / -1;
-}
-
-.mrm-quick-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.mrm-recent-reviews {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.mrm-review-item {
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.mrm-review-item:last-child {
-    border-bottom: none;
-}
-
-.mrm-review-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 5px;
-}
-
-.mrm-platform {
-    background: #f0f0f0;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.mrm-platform-google {
-    background: #4285f4;
-    color: white;
-}
-
-.mrm-platform-yelp {
-    background: #d32323;
-    color: white;
-}
-
-.mrm-platform-manual {
-    background: #0073aa;
-    color: white;
-}
-
-.mrm-platform-user_submitted {
-    background: #50c878;
-    color: white;
-}
-
-.mrm-all-reviews-section {
-    grid-column: 1 / -1;
-    order: -1; /* Move to top */
-}
-
-.mrm-reviews-table-container {
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.mrm-all-reviews-section .button-small {
-    margin-right: 3px;
-    margin-bottom: 2px;
-    white-space: nowrap;
-}
-
-.mrm-rating {
-    color: #ffa500;
-}
-
-.mrm-review-text {
-    margin: 8px 0;
-    color: #666;
-}
-
-.mrm-review-meta {
-    font-size: 12px;
-    color: #999;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.mrm-edited {
-    color: #0073aa;
-    font-style: italic;
-}
-
-.mrm-edit-link {
-    color: #0073aa;
-    text-decoration: none;
-}
-
-.mrm-edit-link:hover {
-    text-decoration: underline;
-}
-
-.mrm-empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-}
-
-.mrm-shortcode-examples {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    margin: 20px 0;
-}
-
-.mrm-shortcode-card {
-    background: #f9f9f9;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.mrm-shortcode-card h3 {
-    margin: 0 0 10px 0;
-    color: #333;
-}
-
-.mrm-shortcode-card code {
-    display: block;
-    background: #fff;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    font-size: 13px;
-    word-break: break-all;
-    margin: 10px 0;
-}
-
-@media (max-width: 768px) {
-    .mrm-dashboard-content {
-        grid-template-columns: 1fr;
-    }
-    
-    .mrm-shortcode-examples {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-
-<script>
-jQuery(document).ready(function($) {
-    // Bulk text replacement
-    $('#bulk-replace-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        const searchText = $('#search-text').val().trim();
-        const replaceText = $('#replace-text').val().trim();
-        const locationId = $('#replace-location').val();
-        
-        if (!searchText || !replaceText) {
-            alert('<?php _e('Please enter both search and replace text.', 'manual-review-manager'); ?>');
-            return;
-        }
-        
-        if (!confirm('<?php _e('Are you sure you want to replace "', 'manual-review-manager'); ?>' + searchText + '" with "' + replaceText + '"?')) {
-            return;
-        }
-        
-        $.post(ajaxurl, {
-            action: 'mrm_bulk_replace_text',
-            search_text: searchText,
-            replace_text: replaceText,
-            location_id: locationId,
-            nonce: '<?php echo wp_create_nonce('mrm_nonce'); ?>'
-        })
-        .done(function(response) {
-            if (response.success) {
-                alert('<?php _e('Text replaced successfully! Reviews updated: ', 'manual-review-manager'); ?>' + response.data.updated_count);
-                location.reload();
-            } else {
-                alert('<?php _e('Error replacing text: ', 'manual-review-manager'); ?>' + (response.data || '<?php _e('Unknown error', 'manual-review-manager'); ?>'));
-            }
-        })
-        .fail(function() {
-            alert('<?php _e('Network error while replacing text.', 'manual-review-manager'); ?>');
-        });
-    });
-    
-    // Approve review functionality for dashboard
-    $('.approve-review-btn').on('click', function() {
-        const reviewId = $(this).data('review-id');
-        const button = $(this);
-        
-        button.prop('disabled', true).text('<?php _e('Approving...', 'manual-review-manager'); ?>');
-        
-        $.post(ajaxurl, {
-            action: 'mrm_approve_review',
-            review_id: reviewId,
-            nonce: '<?php echo wp_create_nonce('mrm_nonce'); ?>'
-        })
-        .done(function(response) {
-            if (response.success) {
-                alert(response.data);
-                location.reload();
-            } else {
-                alert('<?php _e('Error: ', 'manual-review-manager'); ?>' + (response.data || '<?php _e('Unknown error occurred.', 'manual-review-manager'); ?>'));
-                button.prop('disabled', false).text('<?php _e('Approve', 'manual-review-manager'); ?>');
-            }
-        })
-        .fail(function() {
-            alert('<?php _e('Network error. Please try again.', 'manual-review-manager'); ?>');
-            button.prop('disabled', false).text('<?php _e('Approve', 'manual-review-manager'); ?>');
-        });
-    });
-    
-    // Reject review functionality for dashboard
-    $('.reject-review-btn').on('click', function() {
-        if (!confirm('<?php _e('Are you sure you want to reject this review? This will delete it permanently.', 'manual-review-manager'); ?>')) {
-            return;
-        }
-        
-        const reviewId = $(this).data('review-id');
-        const button = $(this);
-        
-        button.prop('disabled', true).text('<?php _e('Rejecting...', 'manual-review-manager'); ?>');
-        
-        $.post(ajaxurl, {
-            action: 'mrm_delete_review',
-            review_id: reviewId,
-            nonce: '<?php echo wp_create_nonce('mrm_nonce'); ?>'
-        })
-        .done(function(response) {
-            if (response.success) {
-                alert('<?php _e('Review rejected and deleted.', 'manual-review-manager'); ?>');
-                location.reload();
-            } else {
-                alert('<?php _e('Error: ', 'manual-review-manager'); ?>' + (response.data || '<?php _e('Unknown error occurred.', 'manual-review-manager'); ?>'));
-                button.prop('disabled', false).text('<?php _e('Reject', 'manual-review-manager'); ?>');
-            }
-        })
-        .fail(function() {
-            alert('<?php _e('Network error. Please try again.', 'manual-review-manager'); ?>');
-            button.prop('disabled', false).text('<?php _e('Reject', 'manual-review-manager'); ?>');
-        });
-    });
-    
-    // Delete review functionality for dashboard
-    $('.delete-review-btn').on('click', function() {
-        if (!confirm('<?php _e('Are you sure you want to delete this review? This action cannot be undone.', 'manual-review-manager'); ?>')) {
-            return;
-        }
-        
-        const reviewId = $(this).data('review-id');
-        const button = $(this);
-        
-        button.prop('disabled', true).text('<?php _e('Deleting...', 'manual-review-manager'); ?>');
-        
-        $.post(ajaxurl, {
-            action: 'mrm_delete_review',
-            review_id: reviewId,
-            nonce: '<?php echo wp_create_nonce('mrm_nonce'); ?>'
-        })
-        .done(function(response) {
-            if (response.success) {
-                alert(response.data);
-                location.reload();
-            } else {
-                alert('<?php _e('Error: ', 'manual-review-manager'); ?>' + (response.data || '<?php _e('Unknown error occurred.', 'manual-review-manager'); ?>'));
-                button.prop('disabled', false).text('<?php _e('Delete', 'manual-review-manager'); ?>');
-            }
-        })
-        .fail(function() {
-            alert('<?php _e('Network error. Please try again.', 'manual-review-manager'); ?>');
-            button.prop('disabled', false).text('<?php _e('Delete', 'manual-review-manager'); ?>');
-        });
-    });
-});
-</script> 
+</div> 

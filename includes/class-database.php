@@ -1,13 +1,13 @@
 <?php
 /**
- * Review Manager Database Class
+ * BuzzHub Database Class
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class MRM_Database {
+class BuzzHub_Database {
     
     public static function create_tables() {
         global $wpdb;
@@ -15,7 +15,7 @@ class MRM_Database {
         $charset_collate = $wpdb->get_charset_collate();
         
         // Locations table - simplified for manual management
-        $locations_table = $wpdb->prefix . 'mrm_locations';
+        $locations_table = $wpdb->prefix . 'buzzhub_locations';
         $locations_sql = "CREATE TABLE $locations_table (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             name varchar(255) NOT NULL,
@@ -29,7 +29,7 @@ class MRM_Database {
         ) $charset_collate;";
         
         // Reviews table - for manual entry
-        $reviews_table = $wpdb->prefix . 'mrm_reviews';
+        $reviews_table = $wpdb->prefix . 'buzzhub_reviews';
         $reviews_sql = "CREATE TABLE $reviews_table (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             location_id mediumint(9) NOT NULL,
@@ -63,20 +63,23 @@ class MRM_Database {
     // Location methods
     public static function get_locations() {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_locations';
-        return $wpdb->get_results("SELECT * FROM $table ORDER BY name ASC");
+        $table = $wpdb->prefix . 'buzzhub_locations';
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query, fresh data required
+        return $wpdb->get_results("SELECT * FROM {$table} ORDER BY name ASC");
     }
     
     public static function get_location($id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_locations';
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id));
+        $table = $wpdb->prefix . 'buzzhub_locations';
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query, fresh data required
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $id));
     }
     
     public static function create_location($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_locations';
+        $table = $wpdb->prefix . 'buzzhub_locations';
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table insert operation
         return $wpdb->insert($table, array(
             'name' => sanitize_text_field($data['name']),
             'address' => sanitize_textarea_field($data['address']),
@@ -88,8 +91,9 @@ class MRM_Database {
     
     public static function update_location($id, $data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_locations';
+        $table = $wpdb->prefix . 'buzzhub_locations';
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table update operation
         return $wpdb->update($table, array(
             'name' => sanitize_text_field($data['name']),
             'address' => sanitize_textarea_field($data['address']),
@@ -101,21 +105,23 @@ class MRM_Database {
     
     public static function delete_location($id) {
         global $wpdb;
-        $locations_table = $wpdb->prefix . 'mrm_locations';
-        $reviews_table = $wpdb->prefix . 'mrm_reviews';
+        $locations_table = $wpdb->prefix . 'buzzhub_locations';
+        $reviews_table = $wpdb->prefix . 'buzzhub_reviews';
         
         // Delete associated reviews first
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table delete operation
         $wpdb->delete($reviews_table, array('location_id' => $id));
         
         // Delete location
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table delete operation
         return $wpdb->delete($locations_table, array('id' => $id));
     }
     
     // Review methods
     public static function get_reviews($args = array()) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_reviews';
-        $locations_table = $wpdb->prefix . 'mrm_locations';
+        $table = $wpdb->prefix . 'buzzhub_reviews';
+        $locations_table = $wpdb->prefix . 'buzzhub_locations';
         
         $defaults = array(
             'location_id' => 0,
@@ -157,49 +163,68 @@ class MRM_Database {
             $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
         }
         
-        $order_by = sanitize_sql_orderby($args['sort_by']);
-        $order = in_array(strtoupper($args['order']), array('ASC', 'DESC')) ? strtoupper($args['order']) : 'DESC';
+        // Validate and sanitize ORDER BY field against whitelist
+        $allowed_order_fields = array(
+            'review_date' => 'review_date',
+            'rating' => 'rating',
+            'created_at' => 'created_at',
+            'reviewer_name' => 'reviewer_name'
+        );
+        $order_by = isset($allowed_order_fields[$args['sort_by']]) ? $allowed_order_fields[$args['sort_by']] : 'review_date';
+        
+        // Validate ORDER direction
+        $order = in_array(strtoupper($args['order']), array('ASC', 'DESC'), true) ? strtoupper($args['order']) : 'DESC';
+        
+        // Sanitize limit and offset as integers
         $limit = intval($args['max_reviews']);
         $offset = intval($args['offset']);
         
-        $limit_clause = '';
-        if ($limit > 0) {
-            $limit_clause = "LIMIT $limit";
-            if ($offset > 0) {
-                $limit_clause .= " OFFSET $offset";
-            }
-        }
-        
+        // Build query with placeholders for LIMIT and OFFSET
         $sql = "SELECT r.*, l.name as location_name 
                 FROM $table r 
                 LEFT JOIN $locations_table l ON r.location_id = l.id 
                 $where_clause 
-                ORDER BY r.$order_by $order 
-                $limit_clause";
+                ORDER BY r.$order_by $order";
         
+        // Add LIMIT and OFFSET with placeholders if needed
+        if ($limit > 0) {
+            $sql .= " LIMIT %d";
+            $where_values[] = $limit;
+            
+            if ($offset > 0) {
+                $sql .= " OFFSET %d";
+                $where_values[] = $offset;
+            }
+        }
+        
+        // Execute query with proper prepare
         if (!empty($where_values)) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query, fresh data required
             return $wpdb->get_results($wpdb->prepare($sql, $where_values));
         } else {
+            // No dynamic values, safe to execute directly
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query, fresh data required
             return $wpdb->get_results($sql);
         }
     }
     
     public static function get_review($id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_reviews';
-        $locations_table = $wpdb->prefix . 'mrm_locations';
+        $table = $wpdb->prefix . 'buzzhub_reviews';
+        $locations_table = $wpdb->prefix . 'buzzhub_locations';
         
         $sql = "SELECT r.*, l.name as location_name 
                 FROM $table r 
                 LEFT JOIN $locations_table l ON r.location_id = l.id 
                 WHERE r.id = %d";
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query, fresh data required
         return $wpdb->get_row($wpdb->prepare($sql, $id));
     }
     
     public static function create_review($data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_reviews';
+        $table = $wpdb->prefix . 'buzzhub_reviews';
         
         $insert_data = array(
             'location_id' => intval($data['location_id']),
@@ -219,12 +244,13 @@ class MRM_Database {
             $insert_data['user_id'] = intval($data['user_id']);
         }
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table insert operation
         return $wpdb->insert($table, $insert_data);
     }
     
     public static function update_review($id, $data) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_reviews';
+        $table = $wpdb->prefix . 'buzzhub_reviews';
         
         // If review text is being changed, save original if not already saved
         $current_review = self::get_review($id);
@@ -265,25 +291,28 @@ class MRM_Database {
             }
         }
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table update operation
         return $wpdb->update($table, $update_data, array('id' => $id));
     }
     
     public static function delete_review($id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_reviews';
+        $table = $wpdb->prefix . 'buzzhub_reviews';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table delete operation
         return $wpdb->delete($table, array('id' => $id));
     }
     
     public static function bulk_replace_text($search_text, $replace_text, $location_id = 0) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_reviews';
+        $table = $wpdb->prefix . 'buzzhub_reviews';
         
-        $where_clause = '';
-        $where_values = array($replace_text, $search_text, $search_text);
+        // Build WHERE clause with proper placeholders
+        $where_clause = 'WHERE review_text LIKE %s';
+        $values = array($replace_text, $search_text, '%' . $wpdb->esc_like($search_text) . '%', '%' . $wpdb->esc_like($search_text) . '%', '%' . $wpdb->esc_like($search_text) . '%');
         
         if ($location_id) {
-            $where_clause = 'AND location_id = %d';
-            $where_values[] = $location_id;
+            $where_clause .= ' AND location_id = %d';
+            $values[] = $location_id;
         }
         
         // Update reviews and mark as edited if not already
@@ -299,29 +328,18 @@ class MRM_Database {
                         THEN 1 
                         ELSE is_edited 
                     END
-                WHERE review_text LIKE %s $where_clause";
+                $where_clause";
         
-        $values = array($replace_text, $search_text, '%' . $search_text . '%', '%' . $search_text . '%', '%' . $search_text . '%');
-        if ($location_id) {
-            $values[] = $location_id;
-        }
-        
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table update operation
         $result = $wpdb->query($wpdb->prepare($sql, $values));
         return $result;
     }
     
     public static function get_review_stats($location_id = 0) {
         global $wpdb;
-        $table = $wpdb->prefix . 'mrm_reviews';
+        $table = $wpdb->prefix . 'buzzhub_reviews';
         
-        $where_clause = 'WHERE is_approved = 1';
-        $where_values = array();
-        
-        if ($location_id) {
-            $where_clause .= ' AND location_id = %d';
-            $where_values[] = $location_id;
-        }
-        
+        // Build query with proper placeholders
         $sql = "SELECT 
                     COUNT(*) as total_reviews,
                     AVG(rating) as average_rating,
@@ -331,11 +349,15 @@ class MRM_Database {
                     SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as two_star,
                     SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as one_star
                 FROM $table 
-                $where_clause";
+                WHERE is_approved = 1";
         
-        if (!empty($where_values)) {
-            return $wpdb->get_row($wpdb->prepare($sql, $where_values));
+        if ($location_id) {
+            $sql .= " AND location_id = %d";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query, fresh data required
+            return $wpdb->get_row($wpdb->prepare($sql, $location_id));
         } else {
+            // No dynamic values, safe to execute
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query, fresh data required
             return $wpdb->get_row($sql);
         }
     }

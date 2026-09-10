@@ -1,18 +1,18 @@
-=== Review Manager ===
+=== BuzzHub ===
 Contributors: surefirestudios
-Tags: reviews, testimonials, customer reviews, user reviews, review management, business reviews, review display, review slider, review grid
-Requires at least: 5.0
-Tested up to: 6.4
+Tags: reviews, testimonials, customer reviews, user reviews, review management
+Requires at least: 5.8
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A comprehensive WordPress plugin for managing and displaying customer reviews with user submission capabilities, multiple display layouts, and complete editorial control.
+A powerful WordPress plugin to collect and display customer reviews with user submissions, multiple layouts, and full control.
 
 == Description ==
 
-**Review Manager** is a powerful WordPress plugin that gives you complete control over your customer reviews. Unlike other review plugins that rely on external APIs, Review Manager lets you manually curate, edit, and display reviews exactly how you want them.
+**BuzzHub** is a powerful WordPress plugin that gives you complete control over your customer reviews. Unlike other review plugins that rely on external APIs, BuzzHub lets you manually curate, edit, and display reviews exactly how you want them.
 
 = 🌟 Key Features =
 
@@ -93,9 +93,9 @@ A comprehensive WordPress plugin for managing and displaying customer reviews wi
 == Installation ==
 
 1. Upload the plugin files to `/wp-content/plugins/review-manager/` directory
-2. Activate "Review Manager" through the 'Plugins' menu in WordPress
-3. Go to "Review Manager" → "Locations" to add your business locations
-4. Go to "Review Manager" → "Add Review" to start adding reviews manually
+2. Activate "BuzzHub" through the 'Plugins' menu in WordPress
+3. Go to "BuzzHub" → "Locations" to add your business locations
+4. Go to "BuzzHub" → "Add Review" to start adding reviews manually
 5. Use shortcodes to display reviews on your website
 
 == Frequently Asked Questions ==
@@ -110,7 +110,7 @@ Yes! You have complete editorial control. You can edit any aspect of user-submit
 
 = Do I need API keys from Google or Yelp? =
 
-No! Review Manager is completely self-contained. You can manually add reviews from any source without needing external API access.
+No! BuzzHub is completely self-contained. You can manually add reviews from any source without needing external API access.
 
 = Can I use this for multiple business locations? =
 
@@ -182,6 +182,29 @@ Yes! The plugin includes multiple themes (light, dark, auto), customizable butto
 
 == Changelog ==
 
+= 1.2.4 =
+* FIXED: Critical error with malformed function names (esc_htmlesc_html_e) in admin-settings.php causing fatal errors
+* FIXED: Text domain standardization - all text domains now consistently use lowercase 'buzzhub' per WordPress.org requirements
+* IMPROVED: WordPress.org coding standards compliance across all 357 text domain instances
+* IMPROVED: Enhanced security verification for all AJAX handlers
+
+= 1.2.3 =
+* FIXED: Typo in admin-dashboard.php causing undefined function error
+* IMPROVED: Removed specific business name references for better plugin generalization
+
+= 1.2.2 =
+* FIXED: Additional WordPress coding standards compliance improvements
+* FIXED: Resolved remaining phpcs:ignore comment positioning issues
+* IMPROVED: Enhanced nonce verification documentation
+* IMPROVED: Better code documentation for security suppressions
+
+= 1.2.1 =
+* IMPROVED: WordPress coding standards compliance
+* IMPROVED: Enhanced security with proper input validation and sanitization
+* IMPROVED: Better output escaping throughout the plugin
+* IMPROVED: Code quality improvements and documentation
+* FIXED: All WPCS linter warnings resolved
+
 = 1.2.0 =
 * NEW: User review submission system with approval workflow
 * NEW: Frontend review submission form with photo uploads
@@ -213,6 +236,18 @@ Yes! The plugin includes multiple themes (light, dark, auto), customizable butto
 
 == Upgrade Notice ==
 
+= 1.2.4 =
+Critical bug fix update. Resolves fatal errors with malformed function names and standardizes text domain to lowercase 'buzzhub' per WordPress.org requirements. Essential update for all users.
+
+= 1.2.3 =
+Bug fix update. Resolves PHP error in admin dashboard. Recommended update for all users.
+
+= 1.2.2 =
+Minor maintenance update with additional code quality improvements and enhanced documentation. Safe to update.
+
+= 1.2.1 =
+Security and code quality update. Improved WordPress coding standards compliance with enhanced input validation and output escaping. Recommended update for all users.
+
 = 1.2.0 =
 Major update with user review submission capabilities! Users can now submit reviews directly on your website. Includes enhanced security, better responsive design, and new display options. Backup recommended before upgrading.
 
@@ -229,3 +264,8 @@ This plugin stores review data in your WordPress database. When users submit rev
 - User ID for logged-in users
 
 No data is sent to external services. All data remains on your server and is subject to your website's privacy policy.
+
+== Screenshots  ==
+1-Dashboard. screenshot.jpg
+2-Dashboard-Alt. screenshot-2.jpg
+3-Dashboard-Settings. screenshot-3.jpg

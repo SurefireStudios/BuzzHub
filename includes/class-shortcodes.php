@@ -1,13 +1,13 @@
 <?php
 /**
- * Review Manager Shortcodes Class
+ * BuzzHub Shortcodes Class
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class MRM_Shortcodes {
+class BuzzHub_Shortcodes {
     
     private $frontend;
     
@@ -17,7 +17,7 @@ class MRM_Shortcodes {
         add_shortcode('review_grid_slider', array($this, 'review_grid_slider_shortcode'));
         add_shortcode('review_stats', array($this, 'review_stats_shortcode'));
         
-        $this->frontend = new MRM_Frontend();
+        $this->frontend = new BuzzHub_Frontend();
     }
     
     /**
@@ -68,13 +68,13 @@ class MRM_Shortcodes {
     private function render_review_button($atts) {
         $location_id = intval($atts['location_id']);
         $review_page_url = add_query_arg(array(
-            'mrm_action' => 'submit_review',
+            'buzzhub_action' => 'submit_review',
             'location_id' => $location_id
         ), get_permalink());
         
-        $output = '<div class="mrm-review-button-container">';
-        $output .= '<a href="' . esc_url($review_page_url) . '" class="mrm-submit-review-btn">';
-        $output .= __('Leave Your Own Review', 'manual-review-manager');
+        $output = '<div class="buzzhub-review-button-container">';
+        $output .= '<a href="' . esc_url($review_page_url) . '" class="buzzhub-submit-review-btn">';
+        $output .= __('Leave Your Own Review', 'buzzhub');
         $output .= '</a>';
         $output .= '</div>';
         

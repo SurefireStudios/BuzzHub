@@ -1,12 +1,17 @@
 <?php
 /**
- * Plugin Name: Review Manager
+ * Plugin Name: BuzzHub
  * Plugin URI: https://github.com/SurefireStudios/ReviewManager
  * Description: A comprehensive WordPress plugin for managing and displaying customer reviews with user submission capabilities, multiple display layouts, and complete editorial control.
- * Version: 1.2.0
+ * Version: 1.2.4
  * Author: Surefire Studios
+ * Author URI: https://surefirestudios.com
  * License: GPL v2 or later
- * Text Domain: manual-review-manager
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: buzzhub
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
+ * Tested up to: 6.8
  */
 
 if (!defined('ABSPATH')) {
@@ -14,11 +19,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('MRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('MRM_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('MRM_VERSION', '1.2.0');
+define('BUZZHUB_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('BUZZHUB_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('BUZZHUB_VERSION', '1.2.4');
 
-class ReviewManager {
+class BuzzHub {
     
     public function __construct() {
         add_action('init', array($this, 'init'));
@@ -35,43 +40,43 @@ class ReviewManager {
         
         // Initialize components
         if (is_admin()) {
-            new MRM_Admin();
+            new BuzzHub_Admin();
         }
         
-        new MRM_Frontend();
-        new MRM_Shortcodes();
-        new MRM_User_Reviews();
+        new BuzzHub_Frontend();
+        new BuzzHub_Shortcodes();
+        new BuzzHub_User_Reviews();
     }
     
     private function check_database_updates() {
-        $current_version = get_option('mrm_version', '1.0.0');
+        $current_version = get_option('buzzhub_version', '1.0.0');
         
-        if (version_compare($current_version, MRM_VERSION, '<')) {
+        if (version_compare($current_version, BUZZHUB_VERSION, '<')) {
             // Run database updates
-            require_once MRM_PLUGIN_DIR . 'includes/class-database.php';
-            MRM_Database::create_tables(); // This will add new columns if they don't exist
+            require_once BUZZHUB_PLUGIN_DIR . 'includes/class-database.php';
+            BuzzHub_Database::create_tables(); // This will add new columns if they don't exist
             
             // Update version
-            update_option('mrm_version', MRM_VERSION);
+            update_option('buzzhub_version', BUZZHUB_VERSION);
         }
     }
     
     private function load_dependencies() {
-        require_once MRM_PLUGIN_DIR . 'includes/class-database.php';
-        require_once MRM_PLUGIN_DIR . 'includes/class-admin.php';
-        require_once MRM_PLUGIN_DIR . 'includes/class-frontend.php';
-        require_once MRM_PLUGIN_DIR . 'includes/class-shortcodes.php';
-        require_once MRM_PLUGIN_DIR . 'includes/class-user-reviews.php';
+        require_once BUZZHUB_PLUGIN_DIR . 'includes/class-database.php';
+        require_once BUZZHUB_PLUGIN_DIR . 'includes/class-admin.php';
+        require_once BUZZHUB_PLUGIN_DIR . 'includes/class-frontend.php';
+        require_once BUZZHUB_PLUGIN_DIR . 'includes/class-shortcodes.php';
+        require_once BUZZHUB_PLUGIN_DIR . 'includes/class-user-reviews.php';
     }
     
     public function activate() {
         // Load database class for activation
-        require_once MRM_PLUGIN_DIR . 'includes/class-database.php';
-        MRM_Database::create_tables();
+        require_once BUZZHUB_PLUGIN_DIR . 'includes/class-database.php';
+        BuzzHub_Database::create_tables();
         
         // Set default options
-        add_option('mrm_version', MRM_VERSION);
-        add_option('mrm_display_settings', array(
+        add_option('buzzhub_version', BUZZHUB_VERSION);
+        add_option('buzzhub_display_settings', array(
             'show_photos' => 1,
             'show_dates' => 1,
             'show_platform' => 1,
@@ -85,9 +90,9 @@ class ReviewManager {
     
     public function deactivate() {
         // Clean up scheduled events if any
-        wp_clear_scheduled_hook('mrm_cleanup_temp_files');
+        wp_clear_scheduled_hook('buzzhub_cleanup_temp_files');
     }
 }
 
 // Initialize the plugin
-new ReviewManager(); 
+new BuzzHub(); 

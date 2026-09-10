@@ -1,159 +1,275 @@
 <?php
 /**
- * Review Manager Admin Class
+ * BuzzHub Admin Class
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class MRM_Admin {
+class BuzzHub_Admin {
     
     public function __construct() {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
-        add_action('wp_ajax_mrm_save_review', array($this, 'ajax_save_review'));
-        add_action('wp_ajax_mrm_delete_review', array($this, 'ajax_delete_review'));
-        add_action('wp_ajax_mrm_save_location', array($this, 'ajax_save_location'));
-        add_action('wp_ajax_mrm_delete_location', array($this, 'ajax_delete_location'));
-        add_action('wp_ajax_mrm_bulk_replace_text', array($this, 'ajax_bulk_replace_text'));
-        add_action('wp_ajax_mrm_get_review', array($this, 'ajax_get_review'));
-        add_action('wp_ajax_mrm_load_more_reviews', array($this, 'ajax_load_more_reviews'));
-        add_action('wp_ajax_nopriv_mrm_load_more_reviews', array($this, 'ajax_load_more_reviews'));
-        add_action('wp_ajax_mrm_approve_review', array($this, 'ajax_approve_review'));
+        add_action('wp_ajax_buzzhub_save_review', array($this, 'ajax_save_review'));
+        add_action('wp_ajax_buzzhub_delete_review', array($this, 'ajax_delete_review'));
+        add_action('wp_ajax_buzzhub_save_location', array($this, 'ajax_save_location'));
+        add_action('wp_ajax_buzzhub_delete_location', array($this, 'ajax_delete_location'));
+        add_action('wp_ajax_buzzhub_bulk_replace_text', array($this, 'ajax_bulk_replace_text'));
+        add_action('wp_ajax_buzzhub_get_review', array($this, 'ajax_get_review'));
+        add_action('wp_ajax_buzzhub_load_more_reviews', array($this, 'ajax_load_more_reviews'));
+        add_action('wp_ajax_nopriv_buzzhub_load_more_reviews', array($this, 'ajax_load_more_reviews'));
+        add_action('wp_ajax_buzzhub_approve_review', array($this, 'ajax_approve_review'));
     }
     
     public function add_admin_menu() {
         add_menu_page(
-            __('Review Manager', 'manual-review-manager'),
-            __('Review Manager', 'manual-review-manager'),
+            __('buzzhub', 'buzzhub'),
+            __('buzzhub', 'buzzhub'),
             'manage_options',
-            'manual-review-manager',
+            'buzzhub',
             array($this, 'dashboard_page'),
             'dashicons-star-filled',
             30
         );
         
         add_submenu_page(
-            'manual-review-manager',
-            __('Dashboard', 'manual-review-manager'),
-            __('Dashboard', 'manual-review-manager'),
+            'buzzhub',
+            __('Dashboard', 'buzzhub'),
+            __('Dashboard', 'buzzhub'),
             'manage_options',
-            'manual-review-manager',
+            'buzzhub',
             array($this, 'dashboard_page')
         );
         
         add_submenu_page(
-            'manual-review-manager',
-            __('All Reviews', 'manual-review-manager'),
-            __('All Reviews', 'manual-review-manager'),
+            'buzzhub',
+            __('All Reviews', 'buzzhub'),
+            __('All Reviews', 'buzzhub'),
             'manage_options',
-            'mrm-reviews',
+            'buzzhub-reviews',
             array($this, 'reviews_page')
         );
         
         add_submenu_page(
-            'manual-review-manager',
-            __('Add Review', 'manual-review-manager'),
-            __('Add Review', 'manual-review-manager'),
+            'buzzhub',
+            __('Add Review', 'buzzhub'),
+            __('Add Review', 'buzzhub'),
             'manage_options',
-            'mrm-add-review',
+            'buzzhub-add-review',
             array($this, 'add_review_page')
         );
         
         add_submenu_page(
-            'manual-review-manager',
-            __('Locations', 'manual-review-manager'),
-            __('Locations', 'manual-review-manager'),
+            'buzzhub',
+            __('Locations', 'buzzhub'),
+            __('Locations', 'buzzhub'),
             'manage_options',
-            'mrm-locations',
+            'buzzhub-locations',
             array($this, 'locations_page')
         );
         
         add_submenu_page(
-            'manual-review-manager',
-            __('Settings', 'manual-review-manager'),
-            __('Settings', 'manual-review-manager'),
+            'buzzhub',
+            __('Settings', 'buzzhub'),
+            __('Settings', 'buzzhub'),
             'manage_options',
-            'mrm-settings',
+            'buzzhub-settings',
             array($this, 'settings_page')
         );
     }
     
     public function enqueue_admin_scripts($hook) {
-        if (strpos($hook, 'manual-review-manager') !== false || strpos($hook, 'mrm-') !== false) {
+        if (strpos($hook, 'buzzhub') !== false || strpos($hook, 'buzzhub-') !== false) {
             wp_enqueue_script('jquery');
             wp_enqueue_media();
-                    wp_enqueue_script('mrm-admin', MRM_PLUGIN_URL . 'assets/admin.js', array('jquery'), MRM_VERSION, true);
-        wp_enqueue_style('mrm-admin', MRM_PLUGIN_URL . 'assets/admin.css', array(), MRM_VERSION);
+            wp_enqueue_script('buzzhub-admin', BUZZHUB_PLUGIN_URL . 'assets/admin.js', array('jquery'), BUZZHUB_VERSION, true);
+            wp_enqueue_style('buzzhub-admin', BUZZHUB_PLUGIN_URL . 'assets/admin.css', array(), BUZZHUB_VERSION);
             
-            wp_localize_script('mrm-admin', 'mrm_ajax', array(
+            // Enqueue template-specific CSS
+            wp_enqueue_style('buzzhub-admin-templates', BUZZHUB_PLUGIN_URL . 'assets/admin-templates.css', array('buzzhub-admin'), BUZZHUB_VERSION);
+            
+            wp_localize_script('buzzhub-admin', 'buzzhub_ajax', array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('mrm_nonce'),
-                'confirm_delete' => __('Are you sure you want to delete this item?', 'manual-review-manager'),
-                'error_message' => __('An error occurred. Please try again.', 'manual-review-manager')
+                'nonce' => wp_create_nonce('buzzhub_nonce'),
+                'confirm_delete' => __('Are you sure you want to delete this item?', 'buzzhub'),
+                'error_message' => __('An error occurred. Please try again.', 'buzzhub')
             ));
+            
+            // Page-specific scripts
+            if (strpos($hook, 'buzzhub-locations') !== false) {
+                wp_enqueue_script('buzzhub-admin-locations', BUZZHUB_PLUGIN_URL . 'assets/admin-locations.js', array('jquery', 'buzzhub-admin'), BUZZHUB_VERSION, true);
+                wp_localize_script('buzzhub-admin-locations', 'buzzhub_locations', array(
+                    'edit_title' => __('Edit Location', 'buzzhub'),
+                    'add_title' => __('Add New Location', 'buzzhub'),
+                    'update_text' => __('Update Location', 'buzzhub'),
+                    'save_text' => __('Save Location', 'buzzhub'),
+                    'saving_text' => __('Saving...', 'buzzhub'),
+                    'error_prefix' => __('Error: ', 'buzzhub'),
+                    'error_unknown' => __('Unknown error occurred.', 'buzzhub'),
+                    'error_network' => __('Network error. Please try again.', 'buzzhub'),
+                    'confirm_delete' => __('Are you sure you want to delete this location? This will also delete all associated reviews.', 'buzzhub')
+                ));
+            }
+            
+            if (strpos($hook, 'buzzhub-reviews') !== false) {
+                wp_enqueue_script('buzzhub-admin-reviews', BUZZHUB_PLUGIN_URL . 'assets/admin-reviews.js', array('jquery', 'buzzhub-admin'), BUZZHUB_VERSION, true);
+                wp_localize_script('buzzhub-admin-reviews', 'buzzhub_reviews', array(
+                    'confirm_delete' => __('Are you sure you want to delete this review? This action cannot be undone.', 'buzzhub'),
+                    'confirm_reject' => __('Are you sure you want to reject this review? This will delete it permanently.', 'buzzhub'),
+                    'approving_text' => __('Approving...', 'buzzhub'),
+                    'rejecting_text' => __('Rejecting...', 'buzzhub'),
+                    'approve_text' => __('Approve', 'buzzhub'),
+                    'reject_text' => __('Reject', 'buzzhub'),
+                    'rejected_text' => __('Review rejected and deleted.', 'buzzhub'),
+                    'error_prefix' => __('Error: ', 'buzzhub'),
+                    'error_unknown' => __('Unknown error occurred.', 'buzzhub'),
+                    'error_network' => __('Network error. Please try again.', 'buzzhub')
+                ));
+            }
+            
+            if (strpos($hook, 'buzzhub') !== false && strpos($hook, 'page_buzzhub') !== false) {
+                wp_enqueue_script('buzzhub-admin-dashboard', BUZZHUB_PLUGIN_URL . 'assets/admin-dashboard.js', array('jquery', 'buzzhub-admin'), BUZZHUB_VERSION, true);
+                wp_localize_script('buzzhub-admin-dashboard', 'buzzhub_dashboard', array(
+                    'nonce' => wp_create_nonce('buzzhub_nonce'),
+                    'empty_fields' => __('Please enter both search and replace text.', 'buzzhub'),
+                    /* translators: 1: search text, 2: replacement text */
+                    'confirm_replace' => __('Are you sure you want to replace "%1$s" with "%2$s"?', 'buzzhub'),
+                    'replace_success' => __('Text replaced successfully! Reviews updated: ', 'buzzhub'),
+                    'replace_error' => __('Error replacing text: ', 'buzzhub'),
+                    'confirm_reject' => __('Are you sure you want to reject this review? This will delete it permanently.', 'buzzhub'),
+                    'confirm_delete' => __('Are you sure you want to delete this review? This action cannot be undone.', 'buzzhub'),
+                    'approving_text' => __('Approving...', 'buzzhub'),
+                    'rejecting_text' => __('Rejecting...', 'buzzhub'),
+                    'deleting_text' => __('Deleting...', 'buzzhub'),
+                    'approve_text' => __('Approve', 'buzzhub'),
+                    'reject_text' => __('Reject', 'buzzhub'),
+                    'delete_text' => __('Delete', 'buzzhub'),
+                    'rejected_text' => __('Review rejected and deleted.', 'buzzhub'),
+                    'error_prefix' => __('Error: ', 'buzzhub'),
+                    'error_unknown' => __('Unknown error', 'buzzhub'),
+                    'error_network' => __('Network error while replacing text.', 'buzzhub')
+                ));
+            }
+            
+            if (strpos($hook, 'buzzhub-add-review') !== false) {
+                wp_enqueue_script('buzzhub-admin-add-review', BUZZHUB_PLUGIN_URL . 'assets/admin-add-review.js', array('jquery', 'buzzhub-admin'), BUZZHUB_VERSION, true);
+                wp_localize_script('buzzhub-admin-add-review', 'buzzhub_add_review', array(
+                    'media_title' => __('Select Reviewer Photo', 'buzzhub'),
+                    'media_button' => __('Use this photo', 'buzzhub'),
+                    'saving_text' => __('Saving...', 'buzzhub'),
+                    'confirm_delete' => __('Are you sure you want to delete this review? This action cannot be undone.', 'buzzhub'),
+                    'error_prefix' => __('Error: ', 'buzzhub'),
+                    'error_unknown' => __('Unknown error occurred.', 'buzzhub'),
+                    'error_network' => __('Network error. Please try again.', 'buzzhub'),
+                    'edit_url' => admin_url('admin.php?page=buzzhub-add-review&edit='),
+                    'reviews_url' => admin_url('admin.php?page=buzzhub-reviews')
+                ));
+            }
         }
     }
     
     public function dashboard_page() {
-        $stats = MRM_Database::get_review_stats();
-        $locations = MRM_Database::get_locations();
-        $recent_reviews = MRM_Database::get_reviews(array(
+        // Security check: verify user has proper permissions
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'buzzhub'));
+        }
+        
+        $stats = BuzzHub_Database::get_review_stats();
+        $locations = BuzzHub_Database::get_locations();
+        $recent_reviews = BuzzHub_Database::get_reviews(array(
             'max_reviews' => 10,
             'approved_only' => false, // Show both approved and pending reviews
             'sort_by' => 'created_at', // Sort by newest submissions first
             'order' => 'DESC'
         ));
         
-        include MRM_PLUGIN_DIR . 'templates/admin-dashboard.php';
+        include BUZZHUB_PLUGIN_DIR . 'templates/admin-dashboard.php';
     }
     
     public function reviews_page() {
-        $location_filter = isset($_GET['location']) ? intval($_GET['location']) : 0;
-        $platform_filter = isset($_GET['platform']) ? sanitize_text_field($_GET['platform']) : '';
-        $per_page = 20;
+        // Security check: verify user has proper permissions
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'buzzhub'));
+        }
         
-        $args = array(
-            'max_reviews' => $per_page,
+        // Sanitize GET parameters for filtering (read-only operations)
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET parameters for filtering
+        $location_filter = isset($_GET['location']) ? intval($_GET['location']) : 0;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET parameters for filtering
+        $platform_filter = isset($_GET['platform']) ? sanitize_text_field(wp_unslash($_GET['platform'])) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET parameters for filtering
+        $search_term = isset($_GET['search']) ? sanitize_text_field(wp_unslash($_GET['search'])) : '';
+        
+        // Build filter args
+        $filter_args = array(
+            'max_reviews' => 9999,
             'approved_only' => false
         );
         
         if ($location_filter) {
-            $args['location_id'] = $location_filter;
+            $filter_args['location_id'] = $location_filter;
         }
         
+        $reviews = BuzzHub_Database::get_reviews($filter_args);
+        $locations = BuzzHub_Database::get_locations();
+        
+        // Apply additional filters
         if ($platform_filter) {
-            $args['platform'] = $platform_filter;
+            $reviews = array_filter($reviews, function($review) use ($platform_filter) {
+                return $review->platform === $platform_filter;
+            });
         }
         
-        $reviews = MRM_Database::get_reviews($args);
-        $locations = MRM_Database::get_locations();
+        if ($search_term) {
+            $reviews = array_filter($reviews, function($review) use ($search_term) {
+                return stripos($review->reviewer_name, $search_term) !== false ||
+                       stripos($review->review_text, $search_term) !== false;
+            });
+        }
         
-        include MRM_PLUGIN_DIR . 'templates/admin-reviews.php';
+        include BUZZHUB_PLUGIN_DIR . 'templates/admin-reviews.php';
     }
     
     public function add_review_page() {
-        $locations = MRM_Database::get_locations();
-        $review_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
-        $review = $review_id ? MRM_Database::get_review($review_id) : null;
+        // Security check: verify user has proper permissions
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'buzzhub'));
+        }
         
-        include MRM_PLUGIN_DIR . 'templates/admin-add-review.php';
+        $locations = BuzzHub_Database::get_locations();
+        // Sanitize GET parameter for loading review data (read-only operation)
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET parameter for editing
+        $review_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
+        $review = $review_id ? BuzzHub_Database::get_review($review_id) : null;
+        
+        include BUZZHUB_PLUGIN_DIR . 'templates/admin-add-review.php';
     }
     
     public function locations_page() {
-        $locations = MRM_Database::get_locations();
-        include MRM_PLUGIN_DIR . 'templates/admin-locations.php';
+        // Security check: verify user has proper permissions
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'buzzhub'));
+        }
+        
+        $locations = BuzzHub_Database::get_locations();
+        include BUZZHUB_PLUGIN_DIR . 'templates/admin-locations.php';
     }
     
     public function settings_page() {
-        $display_settings = get_option('mrm_display_settings', array());
-        include MRM_PLUGIN_DIR . 'templates/admin-settings.php';
+        // Security check: verify user has proper permissions
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'buzzhub'));
+        }
+        
+        $display_settings = get_option('buzzhub_display_settings', array());
+        include BUZZHUB_PLUGIN_DIR . 'templates/admin-settings.php';
     }
     
     public function register_settings() {
-        register_setting('mrm_settings_group', 'mrm_display_settings', array(
+        register_setting('buzzhub_settings_group', 'buzzhub_display_settings', array(
             'sanitize_callback' => array($this, 'sanitize_display_settings')
         ));
     }
@@ -206,33 +322,33 @@ class MRM_Admin {
     
     // AJAX Handlers
     public function ajax_save_review() {
-        check_ajax_referer('mrm_nonce', 'nonce');
+        check_ajax_referer('buzzhub_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'manual-review-manager'));
+            wp_die(esc_html__('Unauthorized', 'buzzhub'));
         }
         
         $review_id = isset($_POST['review_id']) ? intval($_POST['review_id']) : 0;
         $data = array(
-            'location_id' => intval($_POST['location_id']),
-            'reviewer_name' => sanitize_text_field($_POST['reviewer_name']),
-            'reviewer_email' => sanitize_email($_POST['reviewer_email']),
-            'reviewer_photo_url' => esc_url_raw($_POST['reviewer_photo_url']),
-            'rating' => floatval($_POST['rating']),
-            'review_text' => sanitize_textarea_field($_POST['review_text']),
-            'review_date' => sanitize_text_field($_POST['review_date']),
-            'platform' => sanitize_text_field($_POST['platform']),
+            'location_id' => isset($_POST['location_id']) ? intval($_POST['location_id']) : 0,
+            'reviewer_name' => isset($_POST['reviewer_name']) ? sanitize_text_field(wp_unslash($_POST['reviewer_name'])) : '',
+            'reviewer_email' => isset($_POST['reviewer_email']) ? sanitize_email(wp_unslash($_POST['reviewer_email'])) : '',
+            'reviewer_photo_url' => isset($_POST['reviewer_photo_url']) ? esc_url_raw(wp_unslash($_POST['reviewer_photo_url'])) : '',
+            'rating' => isset($_POST['rating']) ? floatval($_POST['rating']) : 0,
+            'review_text' => isset($_POST['review_text']) ? sanitize_textarea_field(wp_unslash($_POST['review_text'])) : '',
+            'review_date' => isset($_POST['review_date']) ? sanitize_text_field(wp_unslash($_POST['review_date'])) : '',
+            'platform' => isset($_POST['platform']) ? sanitize_text_field(wp_unslash($_POST['platform'])) : '',
             'is_featured' => isset($_POST['is_featured']) ? 1 : 0,
             'is_approved' => isset($_POST['is_approved']) ? 1 : 0
         );
         
         if ($review_id) {
-            $result = MRM_Database::update_review($review_id, $data);
-            $message = __('Review updated successfully!', 'manual-review-manager');
+            $result = BuzzHub_Database::update_review($review_id, $data);
+            $message = __('Review updated successfully!', 'buzzhub');
         } else {
-            $result = MRM_Database::create_review($data);
+            $result = BuzzHub_Database::create_review($data);
             $review_id = $wpdb->insert_id;
-            $message = __('Review created successfully!', 'manual-review-manager');
+            $message = __('Review created successfully!', 'buzzhub');
         }
         
         if ($result !== false) {
@@ -241,132 +357,166 @@ class MRM_Admin {
                 'review_id' => $review_id
             ));
         } else {
-            wp_send_json_error(__('Failed to save review.', 'manual-review-manager'));
+            wp_send_json_error(__('Failed to save review.', 'buzzhub'));
         }
     }
     
     public function ajax_delete_review() {
-        check_ajax_referer('mrm_nonce', 'nonce');
+        check_ajax_referer('buzzhub_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'manual-review-manager'));
+            wp_die(esc_html__('Unauthorized', 'buzzhub'));
         }
         
-        $review_id = intval($_POST['review_id']);
-        $result = MRM_Database::delete_review($review_id);
+        $review_id = isset($_POST['review_id']) ? intval($_POST['review_id']) : 0;
+        $result = BuzzHub_Database::delete_review($review_id);
         
         if ($result) {
-            wp_send_json_success(__('Review deleted successfully!', 'manual-review-manager'));
+            wp_send_json_success(__('Review deleted successfully!', 'buzzhub'));
         } else {
-            wp_send_json_error(__('Failed to delete review.', 'manual-review-manager'));
+            wp_send_json_error(__('Failed to delete review.', 'buzzhub'));
         }
     }
     
     public function ajax_save_location() {
-        check_ajax_referer('mrm_nonce', 'nonce');
+        check_ajax_referer('buzzhub_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'manual-review-manager'));
+            wp_die(esc_html__('Unauthorized', 'buzzhub'));
         }
         
         $location_id = isset($_POST['location_id']) ? intval($_POST['location_id']) : 0;
         $data = array(
-            'name' => sanitize_text_field($_POST['name']),
-            'address' => sanitize_textarea_field($_POST['address']),
-            'phone' => sanitize_text_field($_POST['phone']),
-            'website' => esc_url_raw($_POST['website']),
-            'description' => sanitize_textarea_field($_POST['description'])
+            'name' => isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '',
+            'address' => isset($_POST['address']) ? sanitize_textarea_field(wp_unslash($_POST['address'])) : '',
+            'phone' => isset($_POST['phone']) ? sanitize_text_field(wp_unslash($_POST['phone'])) : '',
+            'website' => isset($_POST['website']) ? esc_url_raw(wp_unslash($_POST['website'])) : '',
+            'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : ''
         );
         
         if ($location_id) {
-            $result = MRM_Database::update_location($location_id, $data);
-            $message = __('Location updated successfully!', 'manual-review-manager');
+            $result = BuzzHub_Database::update_location($location_id, $data);
+            $message = __('Location updated successfully!', 'buzzhub');
         } else {
-            $result = MRM_Database::create_location($data);
-            $message = __('Location created successfully!', 'manual-review-manager');
+            $result = BuzzHub_Database::create_location($data);
+            $message = __('Location created successfully!', 'buzzhub');
         }
         
         if ($result !== false) {
             wp_send_json_success($message);
         } else {
-            wp_send_json_error(__('Failed to save location.', 'manual-review-manager'));
+            wp_send_json_error(__('Failed to save location.', 'buzzhub'));
         }
     }
     
     public function ajax_delete_location() {
-        check_ajax_referer('mrm_nonce', 'nonce');
+        check_ajax_referer('buzzhub_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'manual-review-manager'));
+            wp_die(esc_html__('Unauthorized', 'buzzhub'));
         }
         
-        $location_id = intval($_POST['location_id']);
-        $result = MRM_Database::delete_location($location_id);
+        $location_id = isset($_POST['location_id']) ? intval($_POST['location_id']) : 0;
+        $result = BuzzHub_Database::delete_location($location_id);
         
         if ($result) {
-            wp_send_json_success(__('Location and associated reviews deleted successfully!', 'manual-review-manager'));
+            wp_send_json_success(__('Location and associated reviews deleted successfully!', 'buzzhub'));
         } else {
-            wp_send_json_error(__('Failed to delete location.', 'manual-review-manager'));
+            wp_send_json_error(__('Failed to delete location.', 'buzzhub'));
         }
     }
     
     public function ajax_bulk_replace_text() {
-        check_ajax_referer('mrm_nonce', 'nonce');
+        check_ajax_referer('buzzhub_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'manual-review-manager'));
+            wp_die(esc_html__('Unauthorized', 'buzzhub'));
         }
         
-        $search_text = sanitize_text_field($_POST['search_text']);
-        $replace_text = sanitize_text_field($_POST['replace_text']);
-        $location_id = intval($_POST['location_id']);
+        $search_text = isset($_POST['search_text']) ? sanitize_text_field(wp_unslash($_POST['search_text'])) : '';
+        $replace_text = isset($_POST['replace_text']) ? sanitize_text_field(wp_unslash($_POST['replace_text'])) : '';
+        $location_id = isset($_POST['location_id']) ? intval($_POST['location_id']) : 0;
         
-        $updated_count = MRM_Database::bulk_replace_text($search_text, $replace_text, $location_id);
+        $updated_count = BuzzHub_Database::bulk_replace_text($search_text, $replace_text, $location_id);
         
         if ($updated_count !== false) {
             wp_send_json_success(array(
                 'updated_count' => $updated_count,
-                'message' => sprintf(__('Successfully updated %d reviews.', 'manual-review-manager'), $updated_count)
+                /* translators: %d: number of reviews updated */
+                'message' => sprintf(__('Successfully updated %d reviews.', 'buzzhub'), $updated_count)
             ));
         } else {
-            wp_send_json_error(__('Failed to update reviews.', 'manual-review-manager'));
+            wp_send_json_error(__('Failed to update reviews.', 'buzzhub'));
         }
     }
     
     public function ajax_get_review() {
-        check_ajax_referer('mrm_nonce', 'nonce');
+        check_ajax_referer('buzzhub_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'manual-review-manager'));
+            wp_die(esc_html__('Unauthorized', 'buzzhub'));
         }
         
-        $review_id = intval($_POST['review_id']);
-        $review = MRM_Database::get_review($review_id);
+        $review_id = isset($_POST['review_id']) ? intval($_POST['review_id']) : 0;
+        $review = BuzzHub_Database::get_review($review_id);
         
         if ($review) {
             wp_send_json_success($review);
         } else {
-            wp_send_json_error(__('Review not found.', 'manual-review-manager'));
+            wp_send_json_error(__('Review not found.', 'buzzhub'));
         }
     }
     
     public function ajax_load_more_reviews() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mrm_nonce')) {
-            wp_send_json_error(__('Invalid nonce.', 'manual-review-manager'));
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'buzzhub_nonce')) {
+            wp_send_json_error(__('Invalid nonce.', 'buzzhub'));
         }
         
-        $args = json_decode(stripslashes($_POST['args']), true);
+        // Sanitize and validate POST data
+        if (!isset($_POST['args']) || !isset($_POST['offset'])) {
+            wp_send_json_error(__('Missing required parameters.', 'buzzhub'));
+        }
+        
+        // Decode JSON and validate it's an array
+        $raw_args = json_decode(stripslashes(sanitize_text_field(wp_unslash($_POST['args']))), true);
+        if (!is_array($raw_args)) {
+            wp_send_json_error(__('Invalid arguments format.', 'buzzhub'));
+        }
+        
         $offset = intval($_POST['offset']);
         
-        // Update args for pagination
-        $args['max_reviews'] = 10; // Load 10 more reviews
+        // Sanitize and validate each argument from the decoded JSON
+        $args = array(
+            'max_reviews' => 10, // Fixed value for pagination
+            'min_rating' => isset($raw_args['min_rating']) ? floatval($raw_args['min_rating']) : 1,
+            'sort_by' => isset($raw_args['sort_by']) ? sanitize_text_field($raw_args['sort_by']) : 'review_date',
+            'order' => isset($raw_args['order']) ? sanitize_text_field($raw_args['order']) : 'DESC',
+            'location_id' => isset($raw_args['location_id']) ? intval($raw_args['location_id']) : 0,
+            'platform' => isset($raw_args['platform']) ? sanitize_text_field($raw_args['platform']) : 'all',
+            'show_photos' => isset($raw_args['show_photos']) ? (bool) $raw_args['show_photos'] : true,
+            'show_dates' => isset($raw_args['show_dates']) ? (bool) $raw_args['show_dates'] : true,
+            'show_platform' => isset($raw_args['show_platform']) ? (bool) $raw_args['show_platform'] : true,
+            'truncate' => isset($raw_args['truncate']) ? intval($raw_args['truncate']) : 50
+        );
+        
+        // Validate order direction
+        $args['order'] = strtoupper($args['order']);
+        if (!in_array($args['order'], array('ASC', 'DESC'), true)) {
+            $args['order'] = 'DESC';
+        }
+        
+        // Validate sort_by field
+        $allowed_sort_fields = array('review_date', 'rating', 'created_at', 'reviewer_name');
+        if (!in_array($args['sort_by'], $allowed_sort_fields, true)) {
+            $args['sort_by'] = 'review_date';
+        }
         
         // Build database query args
         $db_args = array(
             'max_reviews' => intval($args['max_reviews']),
             'min_rating' => floatval($args['min_rating']),
-            'sort_by' => sanitize_text_field($args['sort_by']),
-            'order' => strtoupper($args['order']),
+            'sort_by' => $args['sort_by'],
+            'order' => $args['order'],
             'approved_only' => true,
             'offset' => $offset
         );
@@ -375,29 +525,37 @@ class MRM_Admin {
             $db_args['location_id'] = intval($args['location_id']);
         }
         
+        // Sanitize platform filter
         if ($args['platform'] && $args['platform'] !== 'all') {
             $platforms = explode(',', $args['platform']);
-            $platforms = array_map('trim', $platforms);
+            $platforms = array_map('sanitize_text_field', array_map('trim', $platforms));
+            // Validate platform values
+            $valid_platforms = array('google', 'yelp', 'facebook', 'manual', 'user_submitted', 'other');
+            $platforms = array_filter($platforms, function($platform) use ($valid_platforms) {
+                return in_array($platform, $valid_platforms, true);
+            });
+            
             if (count($platforms) === 1) {
                 $db_args['platform'] = $platforms[0];
             }
         }
         
-        $reviews = MRM_Database::get_reviews($db_args);
+        $reviews = BuzzHub_Database::get_reviews($db_args);
         
         if (empty($reviews)) {
-            wp_send_json_error(__('No more reviews found.', 'manual-review-manager'));
+            wp_send_json_error(__('No more reviews found.', 'buzzhub'));
         }
         
         // Filter by platform if multiple platforms specified
         if ($args['platform'] && $args['platform'] !== 'all' && strpos($args['platform'], ',') !== false) {
-            $platforms = array_map('trim', explode(',', $args['platform']));
+            $platforms = explode(',', $args['platform']);
+            $platforms = array_map('sanitize_text_field', array_map('trim', $platforms));
             $reviews = array_filter($reviews, function($review) use ($platforms) {
-                return in_array($review->platform, $platforms);
+                return in_array($review->platform, $platforms, true);
             });
         }
         
-        $frontend = new MRM_Frontend();
+        $frontend = new BuzzHub_Frontend();
         $html = '';
         
         foreach ($reviews as $review) {
@@ -408,7 +566,7 @@ class MRM_Admin {
         $total_args = $db_args;
         $total_args['max_reviews'] = 0;
         $total_args['offset'] = 0;
-        $all_reviews = MRM_Database::get_reviews($total_args);
+        $all_reviews = BuzzHub_Database::get_reviews($total_args);
         $has_more = count($all_reviews) > ($offset + count($reviews));
         
         wp_send_json_success(array(
@@ -419,23 +577,23 @@ class MRM_Admin {
     }
     
     public function save_settings() {
-        check_admin_referer('mrm_settings', 'mrm_settings_nonce');
+        check_admin_referer('buzzhub_settings', 'buzzhub_settings_nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'manual-review-manager'));
+            wp_die(esc_html__('Unauthorized', 'buzzhub'));
         }
         
         $display_settings = array(
             'show_photos' => isset($_POST['show_photos']) ? 1 : 0,
             'show_dates' => isset($_POST['show_dates']) ? 1 : 0,
             'show_platform' => isset($_POST['show_platform']) ? 1 : 0,
-            'max_reviews' => intval($_POST['max_reviews']),
-            'min_rating' => intval($_POST['min_rating'])
+            'max_reviews' => isset($_POST['max_reviews']) ? intval($_POST['max_reviews']) : 10,
+            'min_rating' => isset($_POST['min_rating']) ? intval($_POST['min_rating']) : 1
         );
         
-        update_option('mrm_display_settings', $display_settings);
+        update_option('buzzhub_display_settings', $display_settings);
         
-        wp_redirect(admin_url('admin.php?page=mrm-settings&updated=1'));
+        wp_redirect(admin_url('admin.php?page=buzzhub-settings&updated=1'));
         exit;
     }
     
@@ -488,24 +646,24 @@ class MRM_Admin {
     }
     
     public function ajax_approve_review() {
-        check_ajax_referer('mrm_nonce', 'nonce');
+        check_ajax_referer('buzzhub_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(__('Permission denied.', 'manual-review-manager'));
+            wp_send_json_error(__('Permission denied.', 'buzzhub'));
         }
         
-        $review_id = intval($_POST['review_id']);
+        $review_id = isset($_POST['review_id']) ? intval($_POST['review_id']) : 0;
         
         if (!$review_id) {
-            wp_send_json_error(__('Invalid review ID.', 'manual-review-manager'));
+            wp_send_json_error(__('Invalid review ID.', 'buzzhub'));
         }
         
-        $result = MRM_Database::update_review($review_id, array('is_approved' => 1));
+        $result = BuzzHub_Database::update_review($review_id, array('is_approved' => 1));
         
         if ($result !== false) {
-            wp_send_json_success(__('Review approved successfully.', 'manual-review-manager'));
+            wp_send_json_success(__('Review approved successfully.', 'buzzhub'));
         } else {
-            wp_send_json_error(__('Failed to approve review.', 'manual-review-manager'));
+            wp_send_json_error(__('Failed to approve review.', 'buzzhub'));
         }
     }
 } 

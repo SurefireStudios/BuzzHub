@@ -1,0 +1,265 @@
+/* Admin Templates CSS */
+
+/* Locations Template */
+.buzzhub-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.buzzhub-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.buzzhub-modal-content {
+    background: #fff;
+    border-radius: 4px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+.buzzhub-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.buzzhub-modal-header h2 {
+    margin: 0;
+}
+
+.buzzhub-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.buzzhub-modal-close:hover {
+    color: #000;
+}
+
+.buzzhub-modal form {
+    padding: 20px;
+}
+
+.buzzhub-modal-footer {
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+.buzzhub-modal-footer .button {
+    margin-left: 10px;
+}
+
+/* Dashboard Template */
+.buzzhub-dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.buzzhub-stat-box {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.buzzhub-stat-box h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.buzzhub-stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #0073aa;
+}
+
+.buzzhub-dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.buzzhub-dashboard-section {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.buzzhub-dashboard-section h2 {
+    margin-top: 0;
+}
+
+.buzzhub-shortcode-info {
+    grid-column: 1 / -1;
+}
+
+.buzzhub-quick-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.buzzhub-recent-reviews {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.buzzhub-review-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.buzzhub-review-item:last-child {
+    border-bottom: none;
+}
+
+.buzzhub-review-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.buzzhub-platform {
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.buzzhub-platform-google {
+    background: #4285f4;
+    color: white;
+}
+
+.buzzhub-platform-yelp {
+    background: #d32323;
+    color: white;
+}
+
+.buzzhub-platform-manual {
+    background: #0073aa;
+    color: white;
+}
+
+.buzzhub-platform-user_submitted {
+    background: #50c878;
+    color: white;
+}
+
+.buzzhub-all-reviews-section {
+    grid-column: 1 / -1;
+    order: -1;
+}
+
+.buzzhub-reviews-table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.buzzhub-all-reviews-section .button-small {
+    margin-right: 3px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+
+.buzzhub-rating {
+    color: #ffa500;
+}
+
+.buzzhub-review-text {
+    margin: 8px 0;
+    color: #666;
+}
+
+.buzzhub-review-meta {
+    font-size: 12px;
+    color: #999;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.buzzhub-edited {
+    color: #0073aa;
+    font-style: italic;
+}
+
+.buzzhub-edit-link {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.buzzhub-edit-link:hover {
+    text-decoration: underline;
+}
+
+.buzzhub-shortcode-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.buzzhub-shortcode-card {
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.buzzhub-shortcode-card h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.buzzhub-shortcode-card code {
+    display: block;
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 13px;
+    word-break: break-all;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .buzzhub-dashboard-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .buzzhub-shortcode-examples {
+        grid-template-columns: 1fr;
+    }
+}
+

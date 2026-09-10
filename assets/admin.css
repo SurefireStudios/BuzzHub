@@ -1,53 +1,53 @@
-/* Review Manager Admin Styles */
+/* BuzzHub Admin Styles */
 
-.mrm-modal {
+.buzzhub-modal {
     z-index: 100000;
 }
 
-.mrm-star-rating {
+.buzzhub-star-rating {
     display: inline-block;
 }
 
-.mrm-star {
+.buzzhub-star {
     display: inline-block;
     cursor: pointer;
     transition: color 0.2s ease;
 }
 
-.mrm-empty-state {
+.buzzhub-empty-state {
     text-align: center;
     padding: 40px;
 }
 
-.mrm-form-container {
+.buzzhub-form-container {
     display: grid;
     gap: 20px;
 }
 
 @media (min-width: 768px) {
-    .mrm-form-container {
+    .buzzhub-form-container {
         grid-template-columns: 2fr 1fr;
     }
 }
 
 /* Settings page styles */
-.mrm-shortcode-examples {
+.buzzhub-shortcode-examples {
     background: #f9f9f9;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
 
-.mrm-shortcode-examples h3 {
+.buzzhub-shortcode-examples h3 {
     margin-top: 20px;
     margin-bottom: 10px;
 }
 
-.mrm-shortcode-examples h3:first-child {
+.buzzhub-shortcode-examples h3:first-child {
     margin-top: 0;
 }
 
-.mrm-shortcode-examples code {
+.buzzhub-shortcode-examples code {
     background: #fff;
     padding: 8px 12px;
     border: 1px solid #ddd;
@@ -57,12 +57,12 @@
     font-family: monospace;
 }
 
-.mrm-shortcode-examples p {
+.buzzhub-shortcode-examples p {
     margin: 5px 0 15px 0;
     color: #666;
 }
 
-.mrm-theme-preview {
+.buzzhub-theme-preview {
     background: #f9f9f9;
     padding: 20px;
     border: 1px solid #ddd;
@@ -70,26 +70,26 @@
     margin-bottom: 20px;
 }
 
-.mrm-theme-preview h3 {
+.buzzhub-theme-preview h3 {
     margin-top: 20px;
     margin-bottom: 15px;
 }
 
-.mrm-theme-preview h3:first-child {
+.buzzhub-theme-preview h3:first-child {
     margin-top: 0;
 }
 
-.mrm-preview-container {
+.buzzhub-preview-container {
     max-width: 400px;
     margin-bottom: 20px;
 }
 
-.mrm-preview-container:last-child {
+.buzzhub-preview-container:last-child {
     margin-bottom: 0;
 }
 
 /* Reviews page styles */
-.mrm-platform {
+.buzzhub-platform {
     background: #f0f0f0;
     color: #666;
     padding: 4px 8px;
@@ -99,22 +99,22 @@
     display: inline-block;
 }
 
-.mrm-platform-google {
+.buzzhub-platform-google {
     background: #4285f4;
     color: white;
 }
 
-.mrm-platform-yelp {
+.buzzhub-platform-yelp {
     background: #d32323;
     color: white;
 }
 
-.mrm-platform-manual {
+.buzzhub-platform-manual {
     background: #0073aa;
     color: white;
 }
 
-.mrm-platform-user_submitted {
+.buzzhub-platform-user_submitted {
     background: #50c878;
     color: white;
 }
@@ -127,55 +127,55 @@
 }
 
 /* Add/Edit review page styles */
-.mrm-form-container {
+.buzzhub-form-container {
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: 20px;
     margin-top: 20px;
 }
 
-.mrm-form-main {
+.buzzhub-form-main {
     min-width: 0;
 }
 
-.mrm-form-sidebar {
+.buzzhub-form-sidebar {
     min-width: 0;
 }
 
-.mrm-star-rating {
+.buzzhub-star-rating {
     font-size: 24px;
     color: #ddd;
     cursor: pointer;
     user-select: none;
 }
 
-.mrm-star-rating .mrm-star {
+.buzzhub-star-rating .buzzhub-star {
     transition: color 0.2s ease;
     margin-right: 2px;
 }
 
-.mrm-star-rating .mrm-star:hover,
-.mrm-star-rating .mrm-star.active {
+.buzzhub-star-rating .buzzhub-star:hover,
+.buzzhub-star-rating .buzzhub-star.active {
     color: #ffa500;
 }
 
-.mrm-star-rating .mrm-star.hover {
+.buzzhub-star-rating .buzzhub-star.hover {
     color: #ffd700;
 }
 
-.mrm-photo-preview {
+.buzzhub-photo-preview {
     margin-top: 10px;
 }
 
-.mrm-actions {
+.buzzhub-actions {
     text-align: left;
 }
 
-.mrm-actions .submit {
+.buzzhub-actions .submit {
     margin-bottom: 10px;
 }
 
-.mrm-original-text {
+.buzzhub-original-text {
     background: #f9f9f9;
     padding: 15px;
     border-radius: 4px;
@@ -185,7 +185,7 @@
 }
 
 @media (max-width: 768px) {
-    .mrm-form-container {
+    .buzzhub-form-container {
         grid-template-columns: 1fr;
     }
 } 

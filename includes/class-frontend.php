@@ -1,13 +1,13 @@
 <?php
 /**
- * Review Manager Frontend Class
+ * BuzzHub Frontend Class
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class MRM_Frontend {
+class BuzzHub_Frontend {
     
     public function __construct() {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_scripts'));
@@ -17,13 +17,13 @@ class MRM_Frontend {
     
     public function enqueue_frontend_scripts() {
         if ($this->has_review_shortcode()) {
-            wp_enqueue_style('mrm-frontend', MRM_PLUGIN_URL . 'assets/frontend.css', array(), MRM_VERSION);
-            wp_enqueue_script('mrm-frontend', MRM_PLUGIN_URL . 'assets/frontend.js', array('jquery'), MRM_VERSION, true);
+            wp_enqueue_style('buzzhub-frontend', BUZZHUB_PLUGIN_URL . 'assets/frontend.css', array(), BUZZHUB_VERSION);
+            wp_enqueue_script('buzzhub-frontend', BUZZHUB_PLUGIN_URL . 'assets/frontend.js', array('jquery'), BUZZHUB_VERSION, true);
             
             // Localize script for AJAX
-            wp_localize_script('mrm-frontend', 'mrm_ajax', array(
+            wp_localize_script('buzzhub-frontend', 'buzzhub_ajax', array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('mrm_nonce')
+                'nonce' => wp_create_nonce('buzzhub_nonce')
             ));
         }
     }
@@ -58,7 +58,7 @@ class MRM_Frontend {
         $args = wp_parse_args($args, $defaults);
         
         // Get display settings defaults
-        $display_settings = get_option('mrm_display_settings', array());
+        $display_settings = get_option('buzzhub_display_settings', array());
         foreach ($display_settings as $key => $value) {
             if (!isset($args[$key]) || $args[$key] === null) {
                 $args[$key] = $value;
@@ -86,18 +86,15 @@ class MRM_Frontend {
             }
         }
         
-        $reviews = MRM_Database::get_reviews($db_args);
-        
-        // Debug: Log how many reviews were fetched
-        error_log('MRM Debug: Fetched ' . count($reviews) . ' reviews for layout: ' . $args['layout']);
+        $reviews = BuzzHub_Database::get_reviews($db_args);
         
         if (empty($reviews)) {
             // Get theme setting for empty state - shortcode parameter overrides global setting
-            $display_settings = get_option('mrm_display_settings', array());
+            $display_settings = get_option('buzzhub_display_settings', array());
             $theme = !empty($args['theme']) ? $args['theme'] : (isset($display_settings['color_theme']) ? $display_settings['color_theme'] : 'light');
-            $theme_class = $theme !== 'light' ? 'mrm-theme-' . esc_attr($theme) : '';
+            $theme_class = $theme !== 'light' ? 'buzzhub-theme-' . esc_attr($theme) : '';
             
-            return '<div class="mrm-no-reviews ' . $theme_class . '"><p>' . esc_html__('No reviews found.', 'manual-review-manager') . '</p></div>';
+            return '<div class="buzzhub-no-reviews ' . $theme_class . '"><p>' . esc_html__('No reviews found.', 'buzzhub') . '</p></div>';
         }
         
         // Filter by platform if multiple platforms specified
@@ -111,20 +108,20 @@ class MRM_Frontend {
         // Check if there are more reviews available
         $total_args = $db_args;
         $total_args['max_reviews'] = 0; // Get all to count total
-        $all_reviews = MRM_Database::get_reviews($total_args);
+        $all_reviews = BuzzHub_Database::get_reviews($total_args);
         $has_more = count($all_reviews) > count($reviews);
         
         // Get theme setting - shortcode parameter overrides global setting
-        $display_settings = get_option('mrm_display_settings', array());
+        $display_settings = get_option('buzzhub_display_settings', array());
         $theme = !empty($args['theme']) ? $args['theme'] : (isset($display_settings['color_theme']) ? $display_settings['color_theme'] : 'light');
-        $theme_class = $theme !== 'light' ? 'mrm-theme-' . esc_attr($theme) : '';
+        $theme_class = $theme !== 'light' ? 'buzzhub-theme-' . esc_attr($theme) : '';
         
         // Get photo size setting - shortcode parameter overrides global setting
         $photo_size = !empty($args['photo_size']) ? $args['photo_size'] : (isset($display_settings['photo_size']) ? $display_settings['photo_size'] : 'small');
-        $photo_size_class = $photo_size === 'large' ? 'mrm-large-photos' : '';
+        $photo_size_class = $photo_size === 'large' ? 'buzzhub-large-photos' : '';
         
-        $container_id = 'mrm-container-' . uniqid();
-        $container_classes = 'mrm-review-container ' . $theme_class . ' ' . $photo_size_class;
+        $container_id = 'buzzhub-container-' . uniqid();
+        $container_classes = 'buzzhub-review-container ' . $theme_class . ' ' . $photo_size_class;
         $output = '<div class="' . trim($container_classes) . '" id="' . $container_id . '" data-args="' . esc_attr(json_encode($args)) . '" data-offset="' . count($reviews) . '">';
         
         switch ($args['layout']) {
@@ -145,9 +142,9 @@ class MRM_Frontend {
         
         // Add View More button if there are more reviews and it's not a slider
         if ($has_more && $args['layout'] !== 'slider' && $args['layout'] !== 'grid_slider') {
-            $output .= '<div class="mrm-view-more-container">';
-            $output .= '<button class="mrm-view-more-btn" onclick="mrmLoadMoreReviews(\'' . esc_js($container_id) . '\')">';
-            $output .= esc_html__('View More Reviews', 'manual-review-manager');
+            $output .= '<div class="buzzhub-view-more-container">';
+            $output .= '<button class="buzzhub-view-more-btn" onclick="buzzhubLoadMoreReviews(\'' . esc_js($container_id) . '\')">';
+            $output .= esc_html__('View More Reviews', 'buzzhub');
             $output .= '</button>';
             $output .= '</div>';
         }
@@ -158,7 +155,7 @@ class MRM_Frontend {
     
     private function render_grid_layout($reviews, $args) {
         $columns = max(1, min(4, intval($args['columns'])));
-        $output = '<div class="mrm-reviews mrm-grid mrm-columns-' . $columns . '">';
+        $output = '<div class="buzzhub-reviews buzzhub-grid buzzhub-columns-' . $columns . '">';
         
         foreach ($reviews as $review) {
             $output .= $this->render_review_item($review, $args);
@@ -169,7 +166,7 @@ class MRM_Frontend {
     }
     
     private function render_list_layout($reviews, $args) {
-        $output = '<div class="mrm-reviews mrm-list">';
+        $output = '<div class="buzzhub-reviews buzzhub-list">';
         
         foreach ($reviews as $review) {
             $output .= $this->render_review_item($review, $args, 'list');
@@ -180,20 +177,17 @@ class MRM_Frontend {
     }
     
     private function render_slider_layout($reviews, $args) {
-        $slider_id = 'mrm-slider-' . uniqid();
+        $slider_id = 'buzzhub-slider-' . uniqid();
         $autoplay = isset($args['autoplay']) ? filter_var($args['autoplay'], FILTER_VALIDATE_BOOLEAN) : true;
         $speed = isset($args['speed']) ? intval($args['speed']) : 5000;
         $arrows = isset($args['arrows']) ? filter_var($args['arrows'], FILTER_VALIDATE_BOOLEAN) : true;
         $dots = isset($args['dots']) ? filter_var($args['dots'], FILTER_VALIDATE_BOOLEAN) : true;
         
-        $output = '<div class="mrm-slider-container" id="' . $slider_id . '" data-autoplay="' . ($autoplay ? 'true' : 'false') . '" data-speed="' . $speed . '">';
-        $output .= '<div class="mrm-slider">';
-        
-        // Debug: Log how many slides we're creating
-        error_log('MRM Debug: Creating ' . count($reviews) . ' slides for regular slider');
+        $output = '<div class="buzzhub-slider-container" id="' . $slider_id . '" data-autoplay="' . ($autoplay ? 'true' : 'false') . '" data-speed="' . $speed . '">';
+        $output .= '<div class="buzzhub-slider">';
         
         foreach ($reviews as $review) {
-            $output .= '<div class="mrm-slide">';
+            $output .= '<div class="buzzhub-slide">';
             $output .= $this->render_review_item($review, $args, 'slider');
             $output .= '</div>';
         }
@@ -201,14 +195,14 @@ class MRM_Frontend {
         $output .= '</div>';
         
         if ($arrows) {
-            $output .= '<button class="mrm-prev" aria-label="Previous review">‹</button>';
-            $output .= '<button class="mrm-next" aria-label="Next review">›</button>';
+            $output .= '<button class="buzzhub-prev" aria-label="Previous review">‹</button>';
+            $output .= '<button class="buzzhub-next" aria-label="Next review">›</button>';
         }
         
         if ($dots) {
-            $output .= '<div class="mrm-dots">';
+            $output .= '<div class="buzzhub-dots">';
             for ($i = 0; $i < count($reviews); $i++) {
-                $output .= '<button class="mrm-dot' . ($i === 0 ? ' active' : '') . '" data-slide="' . $i . '"></button>';
+                $output .= '<button class="buzzhub-dot' . ($i === 0 ? ' active' : '') . '" data-slide="' . $i . '"></button>';
             }
             $output .= '</div>';
         }
@@ -218,7 +212,7 @@ class MRM_Frontend {
     }
 
     private function render_grid_slider_layout($reviews, $args) {
-        $slider_id = 'mrm-grid-slider-' . uniqid();
+        $slider_id = 'buzzhub-grid-slider-' . uniqid();
         $autoplay = isset($args['autoplay']) ? filter_var($args['autoplay'], FILTER_VALIDATE_BOOLEAN) : true;
         $speed = isset($args['speed']) ? intval($args['speed']) : 5000;
         $arrows = isset($args['arrows']) ? filter_var($args['arrows'], FILTER_VALIDATE_BOOLEAN) : true;
@@ -228,15 +222,12 @@ class MRM_Frontend {
         // Group reviews into slides based on columns per slide
         $slides = array_chunk($reviews, $columns);
         
-        // Debug: Log grid slider details
-        error_log('MRM Debug: Creating ' . count($slides) . ' grid slides with ' . $columns . ' columns each from ' . count($reviews) . ' reviews');
-        
-        $output = '<div class="mrm-grid-slider-container" id="' . $slider_id . '" data-autoplay="' . ($autoplay ? 'true' : 'false') . '" data-speed="' . $speed . '" data-columns="' . $columns . '">';
-        $output .= '<div class="mrm-grid-slider">';
+        $output = '<div class="buzzhub-grid-slider-container" id="' . $slider_id . '" data-autoplay="' . ($autoplay ? 'true' : 'false') . '" data-speed="' . $speed . '" data-columns="' . $columns . '">';
+        $output .= '<div class="buzzhub-grid-slider">';
         
         foreach ($slides as $slide_reviews) {
-            $output .= '<div class="mrm-grid-slide">';
-            $output .= '<div class="mrm-grid-slide-content mrm-columns-' . $columns . '">';
+            $output .= '<div class="buzzhub-grid-slide">';
+            $output .= '<div class="buzzhub-grid-slide-content buzzhub-columns-' . $columns . '">';
             
             foreach ($slide_reviews as $review) {
                 $output .= $this->render_review_item($review, $args, 'grid_slider');
@@ -249,14 +240,14 @@ class MRM_Frontend {
         $output .= '</div>';
         
         if ($arrows && count($slides) > 1) {
-            $output .= '<button class="mrm-prev" aria-label="Previous reviews">‹</button>';
-            $output .= '<button class="mrm-next" aria-label="Next reviews">›</button>';
+            $output .= '<button class="buzzhub-prev" aria-label="Previous reviews">‹</button>';
+            $output .= '<button class="buzzhub-next" aria-label="Next reviews">›</button>';
         }
         
         if ($dots && count($slides) > 1) {
-            $output .= '<div class="mrm-dots">';
+            $output .= '<div class="buzzhub-dots">';
             for ($i = 0; $i < count($slides); $i++) {
-                $output .= '<button class="mrm-dot' . ($i === 0 ? ' active' : '') . '" data-slide="' . $i . '"></button>';
+                $output .= '<button class="buzzhub-dot' . ($i === 0 ? ' active' : '') . '" data-slide="' . $i . '"></button>';
             }
             $output .= '</div>';
         }
@@ -274,25 +265,25 @@ class MRM_Frontend {
         $clean_review_text = stripslashes($review->review_text);
         $review_text = $truncate > 0 ? wp_trim_words($clean_review_text, $truncate) : $clean_review_text;
         
-        $output = '<div class="mrm-review-item mrm-review-' . $layout . '" data-rating="' . $review->rating . '">';
+        $output = '<div class="buzzhub-review-item buzzhub-review-' . $layout . '" data-rating="' . $review->rating . '">';
         
         // Header with photo and name
         if ($args['show_photos'] || $review->reviewer_name) {
-            $output .= '<div class="mrm-review-header">';
+            $output .= '<div class="buzzhub-review-header">';
             
             if ($args['show_photos'] && !empty($review->reviewer_photo_url)) {
-                $output .= '<img src="' . esc_url($review->reviewer_photo_url) . '" alt="' . esc_attr($review->reviewer_name) . '" class="mrm-reviewer-photo" />';
+                $output .= '<img src="' . esc_url($review->reviewer_photo_url) . '" alt="' . esc_attr($review->reviewer_name) . '" class="buzzhub-reviewer-photo" />';
             }
             
-            $output .= '<div class="mrm-reviewer-info">';
-            $output .= '<h3 class="mrm-reviewer-name">' . esc_html(stripslashes($review->reviewer_name)) . '</h3>';
+            $output .= '<div class="buzzhub-reviewer-info">';
+            $output .= '<h3 class="buzzhub-reviewer-name">' . esc_html(stripslashes($review->reviewer_name)) . '</h3>';
             
             // Rating stars
-            $output .= '<div class="mrm-rating">';
+            $output .= '<div class="buzzhub-rating">';
             for ($i = 1; $i <= 5; $i++) {
-                $output .= $i <= $review->rating ? '<span class="mrm-star filled">★</span>' : '<span class="mrm-star">☆</span>';
+                $output .= $i <= $review->rating ? '<span class="buzzhub-star filled">★</span>' : '<span class="buzzhub-star">☆</span>';
             }
-            $output .= ' <span class="mrm-rating-number">(' . number_format($review->rating, 1) . ')</span>';
+            $output .= ' <span class="buzzhub-rating-number">(' . number_format($review->rating, 1) . ')</span>';
             $output .= '</div>';
             
             $output .= '</div>';
@@ -300,7 +291,7 @@ class MRM_Frontend {
         }
         
         // Review content  
-        $output .= '<div class="mrm-review-content">';
+        $output .= '<div class="buzzhub-review-content">';
         
         $full_text = $clean_review_text;
         $text_length = strlen($full_text);
@@ -315,32 +306,32 @@ class MRM_Frontend {
                 $short_text = substr($short_text, 0, $last_space);
             }
             
-            $output .= '<p class="mrm-review-text">';
-            $output .= '<span class="mrm-text-short">' . nl2br(wp_kses_post($short_text)) . '...</span>';
-            $output .= '<span class="mrm-text-full" style="display: none;">' . nl2br(wp_kses_post($full_text)) . '</span>';
+            $output .= '<p class="buzzhub-review-text">';
+            $output .= '<span class="buzzhub-text-short">' . nl2br(wp_kses_post($short_text)) . '...</span>';
+            $output .= '<span class="buzzhub-text-full" style="display: none;">' . nl2br(wp_kses_post($full_text)) . '</span>';
             $output .= '</p>';
-            $output .= '<button class="mrm-read-more-btn" onclick="mrmToggleText(this)">' . esc_html__('Read More', 'manual-review-manager') . '</button>';
+            $output .= '<button class="buzzhub-read-more-btn" onclick="buzzhubToggleText(this)">' . esc_html__('Read More', 'buzzhub') . '</button>';
         } else if ($truncate > 0) {
             // Use WordPress truncation if specified and text isn't long enough for Read More
-            $output .= '<p class="mrm-review-text">' . nl2br(wp_kses_post($review_text)) . '</p>';
+            $output .= '<p class="buzzhub-review-text">' . nl2br(wp_kses_post($review_text)) . '</p>';
         } else {
             // Show full text if it's short
-            $output .= '<p class="mrm-review-text">' . nl2br(wp_kses_post($full_text)) . '</p>';
+            $output .= '<p class="buzzhub-review-text">' . nl2br(wp_kses_post($full_text)) . '</p>';
         }
         
         $output .= '</div>';
         
         // Footer with date and platform
         if ($args['show_dates'] || $args['show_platform']) {
-            $output .= '<div class="mrm-review-footer">';
+            $output .= '<div class="buzzhub-review-footer">';
             
             if ($args['show_dates']) {
-                $output .= '<span class="mrm-review-date">' . $this->get_relative_time($review->review_date) . '</span>';
+                $output .= '<span class="buzzhub-review-date">' . $this->get_relative_time($review->review_date) . '</span>';
             }
             
             if ($args['show_platform'] && $review->platform !== 'manual') {
                 $platform_label = ucfirst($review->platform);
-                $output .= '<span class="mrm-platform mrm-platform-' . esc_attr($review->platform) . '" title="' . esc_attr($platform_label) . ' Review">';
+                $output .= '<span class="buzzhub-platform buzzhub-platform-' . esc_attr($review->platform) . '" title="' . esc_attr($platform_label) . ' Review">';
                 $output .= $this->get_platform_svg($review->platform);
                 $output .= '</span>';
             }
@@ -361,56 +352,56 @@ class MRM_Frontend {
         );
         
         $args = wp_parse_args($args, $defaults);
-        $stats = MRM_Database::get_review_stats($args['location_id']);
+        $stats = BuzzHub_Database::get_review_stats($args['location_id']);
         
         if (!$stats || $stats->total_reviews == 0) {
             // Get theme setting for empty state - shortcode parameter overrides global setting
-            $display_settings = get_option('mrm_display_settings', array());
+            $display_settings = get_option('buzzhub_display_settings', array());
             $theme = !empty($args['theme']) ? $args['theme'] : (isset($display_settings['color_theme']) ? $display_settings['color_theme'] : 'light');
-            $theme_class = $theme !== 'light' ? 'mrm-theme-' . esc_attr($theme) : '';
+            $theme_class = $theme !== 'light' ? 'buzzhub-theme-' . esc_attr($theme) : '';
             
-            return '<div class="mrm-no-stats ' . $theme_class . '"><p>' . esc_html__('No review statistics available.', 'manual-review-manager') . '</p></div>';
+            return '<div class="buzzhub-no-stats ' . $theme_class . '"><p>' . esc_html__('No review statistics available.', 'buzzhub') . '</p></div>';
         }
         
         // Get theme setting - shortcode parameter overrides global setting
-        $display_settings = get_option('mrm_display_settings', array());
+        $display_settings = get_option('buzzhub_display_settings', array());
         $theme = !empty($args['theme']) ? $args['theme'] : (isset($display_settings['color_theme']) ? $display_settings['color_theme'] : 'light');
-        $theme_class = $theme !== 'light' ? 'mrm-theme-' . esc_attr($theme) : '';
+        $theme_class = $theme !== 'light' ? 'buzzhub-theme-' . esc_attr($theme) : '';
         
-        $output = '<div class="mrm-review-stats ' . $theme_class . '">';
+        $output = '<div class="buzzhub-review-stats ' . $theme_class . '">';
         
         if ($args['show_total']) {
-            $output .= '<div class="mrm-stat-item mrm-total-reviews">';
-            $output .= '<span class="mrm-stat-number">' . number_format($stats->total_reviews) . '</span>';
-            $output .= '<span class="mrm-stat-label">' . _n('Review', 'Reviews', $stats->total_reviews, 'manual-review-manager') . '</span>';
+            $output .= '<div class="buzzhub-stat-item buzzhub-total-reviews">';
+            $output .= '<span class="buzzhub-stat-number">' . number_format($stats->total_reviews) . '</span>';
+            $output .= '<span class="buzzhub-stat-label">' . _n('Review', 'Reviews', $stats->total_reviews, 'buzzhub') . '</span>';
             $output .= '</div>';
         }
         
         if ($args['show_average']) {
-            $output .= '<div class="mrm-stat-item mrm-average-rating">';
-            $output .= '<span class="mrm-stat-number">' . number_format($stats->average_rating, 1) . '</span>';
-            $output .= '<span class="mrm-stat-label">' . __('Average Rating', 'manual-review-manager') . '</span>';
-            $output .= '<div class="mrm-rating">';
+            $output .= '<div class="buzzhub-stat-item buzzhub-average-rating">';
+            $output .= '<span class="buzzhub-stat-number">' . number_format($stats->average_rating, 1) . '</span>';
+            $output .= '<span class="buzzhub-stat-label">' . __('Average Rating', 'buzzhub') . '</span>';
+            $output .= '<div class="buzzhub-rating">';
             for ($i = 1; $i <= 5; $i++) {
-                $output .= $i <= round($stats->average_rating) ? '<span class="mrm-star filled">★</span>' : '<span class="mrm-star">☆</span>';
+                $output .= $i <= round($stats->average_rating) ? '<span class="buzzhub-star filled">★</span>' : '<span class="buzzhub-star">☆</span>';
             }
             $output .= '</div>';
             $output .= '</div>';
         }
         
         if ($args['show_breakdown']) {
-            $output .= '<div class="mrm-rating-breakdown">';
-            $output .= '<h4>' . __('Rating Breakdown', 'manual-review-manager') . '</h4>';
+            $output .= '<div class="buzzhub-rating-breakdown">';
+            $output .= '<h4>' . __('Rating Breakdown', 'buzzhub') . '</h4>';
             
             for ($i = 5; $i >= 1; $i--) {
                 $count_property = $this->get_rating_property($i);
                 $count = $stats->$count_property;
                 $percentage = $stats->total_reviews > 0 ? ($count / $stats->total_reviews) * 100 : 0;
                 
-                $output .= '<div class="mrm-breakdown-item">';
-                $output .= '<span class="mrm-breakdown-stars">' . $i . ' ★</span>';
-                $output .= '<div class="mrm-breakdown-bar"><div class="mrm-breakdown-fill" style="width: ' . $percentage . '%"></div></div>';
-                $output .= '<span class="mrm-breakdown-count">(' . $count . ')</span>';
+                $output .= '<div class="buzzhub-breakdown-item">';
+                $output .= '<span class="buzzhub-breakdown-stars">' . $i . ' ★</span>';
+                $output .= '<div class="buzzhub-breakdown-bar"><div class="buzzhub-breakdown-fill" style="width: ' . $percentage . '%"></div></div>';
+                $output .= '<span class="buzzhub-breakdown-count">(' . $count . ')</span>';
                 $output .= '</div>';
             }
             
@@ -436,22 +427,27 @@ class MRM_Frontend {
         $time = time() - strtotime($date);
         
         if ($time < 60) {
-            return __('Just now', 'manual-review-manager');
+            return __('Just now', 'buzzhub');
         } elseif ($time < 3600) {
             $minutes = round($time / 60);
-            return sprintf(_n('%d minute ago', '%d minutes ago', $minutes, 'manual-review-manager'), $minutes);
+            /* translators: %d: number of minutes */
+            return sprintf(_n('%d minute ago', '%d minutes ago', $minutes, 'buzzhub'), $minutes);
         } elseif ($time < 86400) {
             $hours = round($time / 3600);
-            return sprintf(_n('%d hour ago', '%d hours ago', $hours, 'manual-review-manager'), $hours);
+            /* translators: %d: number of hours */
+            return sprintf(_n('%d hour ago', '%d hours ago', $hours, 'buzzhub'), $hours);
         } elseif ($time < 2592000) {
             $days = round($time / 86400);
-            return sprintf(_n('%d day ago', '%d days ago', $days, 'manual-review-manager'), $days);
+            /* translators: %d: number of days */
+            return sprintf(_n('%d day ago', '%d days ago', $days, 'buzzhub'), $days);
         } elseif ($time < 31536000) {
             $months = round($time / 2592000);
-            return sprintf(_n('%d month ago', '%d months ago', $months, 'manual-review-manager'), $months);
+            /* translators: %d: number of months */
+            return sprintf(_n('%d month ago', '%d months ago', $months, 'buzzhub'), $months);
         } else {
             $years = round($time / 31536000);
-            return sprintf(_n('%d year ago', '%d years ago', $years, 'manual-review-manager'), $years);
+            /* translators: %d: number of years */
+            return sprintf(_n('%d year ago', '%d years ago', $years, 'buzzhub'), $years);
         }
     }
     
@@ -503,7 +499,7 @@ class MRM_Frontend {
             return;
         }
         
-        $reviews = MRM_Database::get_reviews(array('max_reviews' => 50, 'approved_only' => true));
+        $reviews = BuzzHub_Database::get_reviews(array('max_reviews' => 50, 'approved_only' => true));
         if (empty($reviews)) {
             return;
         }
@@ -545,7 +541,7 @@ class MRM_Frontend {
             return;
         }
         
-        $display_settings = get_option('mrm_display_settings', array());
+        $display_settings = get_option('buzzhub_display_settings', array());
         $button_color = isset($display_settings['button_color']) ? $display_settings['button_color'] : 'blue';
         
         $color_schemes = array(
@@ -560,35 +556,37 @@ class MRM_Frontend {
         
         $colors = isset($color_schemes[$button_color]) ? $color_schemes[$button_color] : $color_schemes['blue'];
         
-        echo '<style>
+        $custom_css = '
         :root {
-            --mrm-button-bg: ' . $colors['bg'] . ';
-            --mrm-button-hover: ' . $colors['hover'] . ';
+            --buzzhub-button-bg: ' . esc_attr($colors['bg']) . ';
+            --buzzhub-button-hover: ' . esc_attr($colors['hover']) . ';
         }
         
         /* Review submission button */
-        .mrm-submit-review-btn {
-            background: ' . $colors['bg'] . ' !important;
+        .buzzhub-submit-review-btn {
+            background: ' . esc_attr($colors['bg']) . ' !important;
         }
-        .mrm-submit-review-btn:hover {
-            background: ' . $colors['hover'] . ' !important;
+        .buzzhub-submit-review-btn:hover {
+            background: ' . esc_attr($colors['hover']) . ' !important;
         }
         
         /* Form buttons */
-        .mrm-submit-btn {
-            background: ' . $colors['bg'] . ' !important;
+        .buzzhub-submit-btn {
+            background: ' . esc_attr($colors['bg']) . ' !important;
         }
-        .mrm-submit-btn:hover:not(:disabled) {
-            background: ' . $colors['hover'] . ' !important;
+        .buzzhub-submit-btn:hover:not(:disabled) {
+            background: ' . esc_attr($colors['hover']) . ' !important;
         }
         
         /* Success message buttons */
-        .mrm-success-message .mrm-back-btn {
-            background: ' . $colors['bg'] . ' !important;
+        .buzzhub-success-message .buzzhub-back-btn {
+            background: ' . esc_attr($colors['bg']) . ' !important;
         }
-        .mrm-success-message .mrm-back-btn:hover {
-            background: ' . $colors['hover'] . ' !important;
+        .buzzhub-success-message .buzzhub-back-btn:hover {
+            background: ' . esc_attr($colors['hover']) . ' !important;
         }
-        </style>';
+        ';
+        
+        wp_add_inline_style('buzzhub-frontend', $custom_css);
     }
 } 

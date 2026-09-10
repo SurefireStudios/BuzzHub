@@ -4,7 +4,7 @@
 jQuery(document).ready(function($) {
     
     // Star rating functionality
-    $('.mrm-star-rating input').on('change', function() {
+    $('.buzzhub-star-rating input').on('change', function() {
         const rating = $(this).val();
         const texts = {
             '1': 'Poor',
@@ -13,20 +13,20 @@ jQuery(document).ready(function($) {
             '4': 'Very Good',
             '5': 'Excellent'
         };
-        $('.mrm-rating-text').text(texts[rating] || '');
+        $('.buzzhub-rating-text').text(texts[rating] || '');
     });
     
     // Photo upload preview
     $('#reviewer_photo').on('change', function() {
         const file = this.files[0];
         if (file) {
-            if (file.size > mrm_review_ajax.max_file_size) {
-                alert('File size too large. Maximum size is ' + Math.round(mrm_review_ajax.max_file_size / 1024 / 1024) + 'MB');
+            if (file.size > buzzhub_review_ajax.max_file_size) {
+                alert('File size too large. Maximum size is ' + Math.round(buzzhub_review_ajax.max_file_size / 1024 / 1024) + 'MB');
                 $(this).val('');
                 return;
             }
             
-            if (mrm_review_ajax.allowed_types.indexOf(file.type) === -1) {
+            if (buzzhub_review_ajax.allowed_types.indexOf(file.type) === -1) {
                 alert('Invalid file type. Please upload a JPG, PNG, or GIF image.');
                 $(this).val('');
                 return;
@@ -34,42 +34,42 @@ jQuery(document).ready(function($) {
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                $('.mrm-photo-preview img').attr('src', e.target.result);
-                $('.mrm-photo-preview').show();
-                $('.mrm-upload-instructions').hide();
+                $('.buzzhub-photo-preview img').attr('src', e.target.result);
+                $('.buzzhub-photo-preview').show();
+                $('.buzzhub-upload-instructions').hide();
             };
             reader.readAsDataURL(file);
         }
     });
     
     // Remove photo
-    $('.mrm-remove-photo').on('click', function() {
+    $('.buzzhub-remove-photo').on('click', function() {
         $('#reviewer_photo').val('');
-        $('.mrm-photo-preview').hide();
-        $('.mrm-upload-instructions').show();
+        $('.buzzhub-photo-preview').hide();
+        $('.buzzhub-upload-instructions').show();
     });
     
     // Form submission
-    $('#mrm-review-form').on('submit', function(e) {
+    $('#buzzhub-review-form').on('submit', function(e) {
         e.preventDefault();
         
         const form = $(this);
-        const submitBtn = form.find('.mrm-submit-btn');
+        const submitBtn = form.find('.buzzhub-submit-btn');
         const formData = new FormData(this);
         
         // Add AJAX data
-        formData.append('action', 'mrm_submit_review');
-        formData.append('nonce', mrm_review_ajax.nonce);
+        formData.append('action', 'buzzhub_submit_review');
+        formData.append('nonce', buzzhub_review_ajax.nonce);
         
         // Disable form and show loading
-        form.addClass('mrm-form-loading');
+        form.addClass('buzzhub-form-loading');
         submitBtn.prop('disabled', true);
         
         // Clear previous errors
-        $('.mrm-error-message').remove();
+        $('.buzzhub-error-message').remove();
         
         $.ajax({
-            url: mrm_review_ajax.ajaxurl,
+            url: buzzhub_review_ajax.ajaxurl,
             type: 'POST',
             data: formData,
             processData: false,
@@ -84,24 +84,24 @@ jQuery(document).ready(function($) {
                     
                 } else {
                     // Show error message
-                    const errorHtml = '<div class="mrm-error-message">' + response.message + '</div>';
+                    const errorHtml = '<div class="buzzhub-error-message">' + response.message + '</div>';
                     form.before(errorHtml);
                     
                     // Scroll to error message
                     $('html, body').animate({
-                        scrollTop: $('.mrm-error-message').offset().top - 50
+                        scrollTop: $('.buzzhub-error-message').offset().top - 50
                     }, 500);
                 }
             },
             error: function(xhr, status, error) {
-                const errorHtml = '<div class="mrm-error-message">An error occurred. Please try again.</div>';
+                const errorHtml = '<div class="buzzhub-error-message">An error occurred. Please try again.</div>';
                 form.before(errorHtml);
                 
                 console.error('Review submission error:', error);
             },
             complete: function() {
                 // Re-enable form
-                form.removeClass('mrm-form-loading');
+                form.removeClass('buzzhub-form-loading');
                 submitBtn.prop('disabled', false);
             }
         });
@@ -110,10 +110,10 @@ jQuery(document).ready(function($) {
     // Form validation
     function validateForm() {
         let isValid = true;
-        const form = $('#mrm-review-form');
+        const form = $('#buzzhub-review-form');
         
         // Clear previous validation
-        $('.mrm-form-group').removeClass('has-error');
+        $('.buzzhub-form-group').removeClass('has-error');
         
         // Required fields
         const requiredFields = ['reviewer_name', 'reviewer_email', 'location_id', 'rating', 'review_text'];
@@ -123,7 +123,7 @@ jQuery(document).ready(function($) {
             const value = field.val();
             
             if (!value || (fieldName === 'rating' && !$('input[name="rating"]:checked').length)) {
-                field.closest('.mrm-form-group').addClass('has-error');
+                field.closest('.buzzhub-form-group').addClass('has-error');
                 isValid = false;
             }
         });
@@ -131,7 +131,7 @@ jQuery(document).ready(function($) {
         // Email validation
         const email = $('[name="reviewer_email"]').val();
         if (email && !isValidEmail(email)) {
-            $('[name="reviewer_email"]').closest('.mrm-form-group').addClass('has-error');
+            $('[name="reviewer_email"]').closest('.buzzhub-form-group').addClass('has-error');
             isValid = false;
         }
         
@@ -144,9 +144,9 @@ jQuery(document).ready(function($) {
     }
     
     // Real-time validation
-    $('#mrm-review-form input, #mrm-review-form select, #mrm-review-form textarea').on('blur change', function() {
+    $('#buzzhub-review-form input, #buzzhub-review-form select, #buzzhub-review-form textarea').on('blur change', function() {
         const field = $(this);
-        const group = field.closest('.mrm-form-group');
+        const group = field.closest('.buzzhub-form-group');
         
         if (field.val()) {
             group.removeClass('has-error');
@@ -166,35 +166,35 @@ jQuery(document).ready(function($) {
     const reviewTextarea = $('#review_text');
     if (reviewTextarea.length) {
         const maxLength = 1000; // Set a reasonable limit
-        const counterHtml = '<div class="mrm-char-counter"><span class="mrm-char-count">0</span>/' + maxLength + ' characters</div>';
+        const counterHtml = '<div class="buzzhub-char-counter"><span class="buzzhub-char-count">0</span>/' + maxLength + ' characters</div>';
         reviewTextarea.after(counterHtml);
         
         reviewTextarea.on('input', function() {
             const length = $(this).val().length;
-            $('.mrm-char-count').text(length);
+            $('.buzzhub-char-count').text(length);
             
             if (length > maxLength) {
-                $('.mrm-char-counter').addClass('over-limit');
+                $('.buzzhub-char-counter').addClass('over-limit');
             } else {
-                $('.mrm-char-counter').removeClass('over-limit');
+                $('.buzzhub-char-counter').removeClass('over-limit');
             }
         });
     }
     
     // Auto-save draft functionality (optional enhancement)
     let draftTimer;
-    $('#mrm-review-form input, #mrm-review-form select, #mrm-review-form textarea').on('input change', function() {
+    $('#buzzhub-review-form input, #buzzhub-review-form select, #buzzhub-review-form textarea').on('input change', function() {
         clearTimeout(draftTimer);
         draftTimer = setTimeout(saveDraft, 2000); // Save after 2 seconds of inactivity
     });
     
     function saveDraft() {
-        const formData = $('#mrm-review-form').serialize();
-        localStorage.setItem('mrm_review_draft', formData);
+        const formData = $('#buzzhub-review-form').serialize();
+        localStorage.setItem('buzzhub_review_draft', formData);
     }
     
     function loadDraft() {
-        const draft = localStorage.getItem('mrm_review_draft');
+        const draft = localStorage.getItem('buzzhub_review_draft');
         if (draft) {
             const draftData = new URLSearchParams(draft);
             draftData.forEach(function(value, key) {
@@ -212,7 +212,7 @@ jQuery(document).ready(function($) {
     loadDraft();
     
     // Clear draft on successful submission
-    $(document).on('mrm-review-submitted', function() {
-        localStorage.removeItem('mrm_review_draft');
+    $(document).on('buzzhub-review-submitted', function() {
+        localStorage.removeItem('buzzhub_review_draft');
     });
 });

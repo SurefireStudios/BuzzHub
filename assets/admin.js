@@ -1,9 +1,9 @@
 jQuery(document).ready(function($) {
-    // Admin JavaScript for Review Manager
+    // Admin JavaScript for BuzzHub
     
     // Confirm delete actions
     $('.delete-btn').on('click', function(e) {
-        if (!confirm(mrm_ajax.confirm_delete)) {
+        if (!confirm(buzzhub_ajax.confirm_delete)) {
             e.preventDefault();
             return false;
         }

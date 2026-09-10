@@ -1,31 +1,31 @@
 jQuery(document).ready(function($) {
-    // Review Manager Frontend JavaScript
+    // BuzzHub Frontend JavaScript
     
     // Initialize sliders with a small delay to ensure DOM is ready
     setTimeout(function() {
         // Initialize sliders
-        $('.mrm-slider-container').each(function() {
-            if (!$(this).hasClass('mrm-slider-initialized')) {
-                $(this).addClass('mrm-slider-initialized');
+        $('.buzzhub-slider-container').each(function() {
+            if (!$(this).hasClass('buzzhub-slider-initialized')) {
+                $(this).addClass('buzzhub-slider-initialized');
                 initSlider($(this));
             }
         });
         
         // Initialize grid sliders
-        $('.mrm-grid-slider-container').each(function() {
-            if (!$(this).hasClass('mrm-grid-slider-initialized')) {
-                $(this).addClass('mrm-grid-slider-initialized');
+        $('.buzzhub-grid-slider-container').each(function() {
+            if (!$(this).hasClass('buzzhub-grid-slider-initialized')) {
+                $(this).addClass('buzzhub-grid-slider-initialized');
                 initGridSlider($(this));
             }
         });
     }, 100);
     
     function initSlider($container) {
-        const $slider = $container.find('.mrm-slider');
-        const $slides = $slider.find('.mrm-slide');
-        const $prevBtn = $container.find('.mrm-prev');
-        const $nextBtn = $container.find('.mrm-next');
-        const $dots = $container.find('.mrm-dot');
+        const $slider = $container.find('.buzzhub-slider');
+        const $slides = $slider.find('.buzzhub-slide');
+        const $prevBtn = $container.find('.buzzhub-prev');
+        const $nextBtn = $container.find('.buzzhub-next');
+        const $dots = $container.find('.buzzhub-dot');
         
         let currentSlide = 0;
         const totalSlides = $slides.length;
@@ -40,7 +40,7 @@ jQuery(document).ready(function($) {
         if (totalSlides <= 1) {
             $prevBtn.hide();
             $nextBtn.hide();
-            $container.find('.mrm-dots').hide();
+            $container.find('.buzzhub-dots').hide();
             console.log('Slider hidden - not enough slides');
             return;
         }
@@ -108,11 +108,11 @@ jQuery(document).ready(function($) {
     }
     
     function initGridSlider($container) {
-        const $slider = $container.find('.mrm-grid-slider');
-        const $slides = $slider.find('.mrm-grid-slide');
-        const $prevBtn = $container.find('.mrm-prev');
-        const $nextBtn = $container.find('.mrm-next');
-        const $dots = $container.find('.mrm-dot');
+        const $slider = $container.find('.buzzhub-grid-slider');
+        const $slides = $slider.find('.buzzhub-grid-slide');
+        const $prevBtn = $container.find('.buzzhub-prev');
+        const $nextBtn = $container.find('.buzzhub-next');
+        const $dots = $container.find('.buzzhub-dot');
         
         let currentSlide = 0;
         const totalSlides = $slides.length;
@@ -127,7 +127,7 @@ jQuery(document).ready(function($) {
         if (totalSlides <= 1) {
             $prevBtn.hide();
             $nextBtn.hide();
-            $container.find('.mrm-dots').hide();
+            $container.find('.buzzhub-dots').hide();
             console.log('Grid slider hidden - not enough slides');
             return;
         }
@@ -196,10 +196,10 @@ jQuery(document).ready(function($) {
 }); 
 
 // Read More/Less functionality
-function mrmToggleText(button) {
-    const reviewContent = button.closest('.mrm-review-content');
-    const shortText = reviewContent.querySelector('.mrm-text-short');
-    const fullText = reviewContent.querySelector('.mrm-text-full');
+function buzzhubToggleText(button) {
+    const reviewContent = button.closest('.buzzhub-review-content');
+    const shortText = reviewContent.querySelector('.buzzhub-text-short');
+    const fullText = reviewContent.querySelector('.buzzhub-text-full');
     
     if (shortText && fullText) {
         if (fullText.style.display === 'none') {
@@ -217,9 +217,9 @@ function mrmToggleText(button) {
 }
 
 // View More functionality
-function mrmLoadMoreReviews(containerId) {
+function buzzhubLoadMoreReviews(containerId) {
     const container = document.getElementById(containerId);
-    const button = container.querySelector('.mrm-view-more-btn');
+    const button = container.querySelector('.buzzhub-view-more-btn');
     const args = JSON.parse(container.dataset.args);
     const offset = parseInt(container.dataset.offset);
     
@@ -229,13 +229,13 @@ function mrmLoadMoreReviews(containerId) {
     
     // Prepare data for AJAX request
     const data = new FormData();
-    data.append('action', 'mrm_load_more_reviews');
+    data.append('action', 'buzzhub_load_more_reviews');
     data.append('args', JSON.stringify(args));
     data.append('offset', offset);
-    data.append('nonce', mrm_ajax.nonce);
+    data.append('nonce', buzzhub_ajax.nonce);
     
     // Make AJAX request
-    fetch(mrm_ajax.ajaxurl, {
+    fetch(buzzhub_ajax.ajaxurl, {
         method: 'POST',
         body: data
     })
@@ -243,7 +243,7 @@ function mrmLoadMoreReviews(containerId) {
     .then(result => {
         if (result.success) {
             // Get the reviews container
-            const reviewsContainer = container.querySelector('.mrm-reviews');
+            const reviewsContainer = container.querySelector('.buzzhub-reviews');
             
             // Append new reviews
             reviewsContainer.insertAdjacentHTML('beforeend', result.data.html);
