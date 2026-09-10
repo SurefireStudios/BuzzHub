@@ -218,7 +218,7 @@ Major update with user review submission capabilities! Users can now submit revi
 
 == Support ==
 
-For support, documentation, and feature requests, please visit our [GitHub repository](https://github.com/SurefireStudios/ReviewManager) or contact us through [Surefire Studios](https://surefirestudios.io/).
+For support, documentation, and feature requests, please visit our [GitHub repository](https://github.com/SurefireStudios/BuzzHub) or contact us through [Surefire Studios](https://surefirestudios.io/).
 
 == Privacy Policy ==
 
