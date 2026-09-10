@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: BuzzHub
- * Plugin URI: https://github.com/SurefireStudios/ReviewManager
+ * Plugin URI: https://github.com/SurefireStudios/BuzzHub
  * Description: A comprehensive WordPress plugin for managing and displaying customer reviews with user submission capabilities, multiple display layouts, and complete editorial control.
  * Version: 1.2.4
  * Author: Surefire Studios
